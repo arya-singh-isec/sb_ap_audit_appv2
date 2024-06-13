@@ -3,7 +3,8 @@ import 'package:flutter/services.dart';
 
 import '../features/login/presentation/pages/login_screen.dart';
 import '../navigation_drawer.dart';
-import '../selection_screen.dart';
+import '../features/selection/presentation/pages/selection_screen.dart';
+import '../features/summary/presentation/pages/summary_list.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -33,7 +34,9 @@ class MyApp extends StatelessWidget {
         '/login': (BuildContext context) =>
             _wrapWithScaffold(const LoginScreen()),
         '/selection': (BuildContext context) =>
-            _wrapWithScaffold(const SelectionScreen())
+            _wrapWithScaffold(const SelectionScreen()),
+        '/summary': (BuildContext context) =>
+            _wrapWithScaffold(const SummaryScreen()),
       },
       initialRoute: '/login',
       title: 'My App',
