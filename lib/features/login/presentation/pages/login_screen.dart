@@ -16,9 +16,9 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            // const Image(
-            //     image: AssetImage('lib/core/assets/images/app_logo.jpeg'),
-            //     width: 100.0),
+            const Image(
+                image: AssetImage('lib/core/assets/images/app_logo.png'),
+                width: 200.0),
             const Text(
               'LOGIN',
               style: TextStyle(
