@@ -36,7 +36,7 @@ class MyApp extends StatelessWidget {
         '/selection': (BuildContext context) =>
             _wrapWithScaffold(const SelectionScreen()),
         '/summary': (BuildContext context) =>
-            _wrapWithScaffold(const SummaryScreen()),
+            _wrapWithScaffold( RecordListPage ()),
       },
       initialRoute: '/login',
       title: 'My App',
