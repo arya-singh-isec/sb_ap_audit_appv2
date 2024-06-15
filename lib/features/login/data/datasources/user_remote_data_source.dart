@@ -36,6 +36,15 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
 
   @override
   Future<bool?>? logout() async {
-    throw UnimplementedError();
+    final Uri url = Uri.parse('https://test.example.com/logout');
+    final response =
+        await client.get(url, headers: {'Content-Type': 'application/json'});
+    if (response.statusCode == 200) {
+      return Future.value(json.decode(response.body)['success']);
+    } else {
+      final body = json.decode(response.body);
+      throw ServerException(
+          code: body['error']['code'], message: body['error']['message']);
+    }
   }
 }

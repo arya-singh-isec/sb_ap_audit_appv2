@@ -77,4 +77,35 @@ void main() {
           throwsA(const TypeMatcher<ServerException>()));
     });
   });
+
+  group('logout', () {
+    final Uri url = Uri.parse('https://test.example.com/logout');
+
+    test('should return true when the response code is 200 (success)',
+        () async {
+      // Arrange
+      when(mockHttpClient
+              .get(url, headers: {'Content-Type': 'application/json'}))
+          .thenAnswer((_) async => http.Response('{"success": true}', 200));
+      // Act
+      final result = await remoteDataSourceImpl.logout();
+      // Assert
+      expect(result, true);
+    });
+
+    test(
+        'should return server exception when the response code is 401 or other',
+        () async {
+      // Arrange
+      when(mockHttpClient.get(url, headers: {
+        'Content-Type': 'application/json'
+      })).thenAnswer((_) async => http.Response(
+          '{"success": false, "error": {"code": 401, "message": "something went wrong!"}}',
+          401));
+      // Act
+      final call = remoteDataSourceImpl.logout;
+      // Assert
+      expect(() => call(), throwsA(const TypeMatcher<ServerException>()));
+    });
+  });
 }
