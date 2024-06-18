@@ -42,6 +42,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             backgroundColor: Colors.red,
                           ),
                         );
+                      } else if (state is LoginSuccess) {
+                        Navigator.of(context)
+                            .pushReplacementNamed('/selection');
                       }
                     },
                     child: const LoginForm(),
