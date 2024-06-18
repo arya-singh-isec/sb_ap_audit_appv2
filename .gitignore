@@ -43,4 +43,5 @@ app.*.map.json
 /android/app/release
 
 /lib/core/assets/res
+/lib/core/assets/fonts
 .vscode/

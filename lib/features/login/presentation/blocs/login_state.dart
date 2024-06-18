@@ -1,12 +1,26 @@
-abstract class LoginState {}
+import 'package:equatable/equatable.dart';
 
-class LoginInitial extends LoginState {}
+import '../../domain/entities/user.dart';
+
+abstract class LoginState extends Equatable {
+  const LoginState([List props = const <dynamic>[]]);
+
+  @override
+  List<Object> get props => [];
+}
+
+class LoginEmpty extends LoginState {}
 
 class LoginLoading extends LoginState {}
 
-class LoginFailure extends LoginState {
-  final String? error;
-  LoginFailure({required this.error});
+class LoginError extends LoginState {
+  final String message;
+  LoginError({required this.message}) : super([message]);
 }
 
-class LoginSuccess extends LoginState {}
+class LoginSuccess extends LoginState {
+  final User? user;
+  LoginSuccess({required this.user}) : super([user]);
+}
+
+class LogoutSuccess extends LoginState {}

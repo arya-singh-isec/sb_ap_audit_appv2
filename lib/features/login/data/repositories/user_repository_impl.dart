@@ -1,11 +1,12 @@
 import 'package:dartz/dartz.dart';
-import 'package:sb_ap_audit_appv2/core/error/exceptions.dart';
-import 'package:sb_ap_audit_appv2/core/network/network_info.dart';
-import 'package:sb_ap_audit_appv2/features/login/data/datasources/user_remote_data_source.dart';
+
+import '../../../../core/error/exceptions.dart';
 import '../../../../core/error/failures.dart';
+import '../../../../core/network/network_info.dart';
 import '../../domain/entities/credentials.dart';
 import '../../domain/entities/user.dart';
 import '../../domain/repositories/user_repository.dart';
+import '../datasources/user_remote_data_source.dart';
 
 class UserRepositoryImpl implements UserRepository {
   final UserRemoteDataSource remoteDataSource;
@@ -15,7 +16,7 @@ class UserRepositoryImpl implements UserRepository {
       {required this.remoteDataSource, required this.networkInfo});
 
   @override
-  Future<Either<Failure, User?>> login(Credentials credentials) async {
+  Future<Either<Failure, User?>> login(Credentials? credentials) async {
     await networkInfo.isConnected;
     try {
       final loginResponse = await remoteDataSource.login(credentials);
