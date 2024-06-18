@@ -25,7 +25,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
     dynamic result;
     if (event.credentials != null) {
       final inputEither = inputValidator.validateCredentials(event.credentials);
-      inputEither?.fold((failure) {
+      await inputEither?.fold((failure) {
         emit(
           LoginError(message: 'Username or password cannot be empty!'),
         );
@@ -34,7 +34,10 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         emit(LoginLoading());
         result = await loginUser.execute(credentials);
         result?.fold(
-          (failure) => emit(LoginError(message: _mapFailureToMessage(failure))),
+          (failure) {
+            emit(LoginError(message: _mapFailureToMessage(failure)));
+            emit(LoginEmpty());
+          },
           (val) =>
               emit(val is User ? LoginSuccess(user: val) : LogoutSuccess()),
         );
@@ -50,13 +53,12 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
   }
 
   String _mapFailureToMessage(Failure failure) {
-    switch (failure.runtimeType) {
-      case ServerFailure _:
-        return (failure as ServerFailure).message;
-      case LocalFailure _:
-        return 'Local Error';
-      default:
-        return 'Unexpected Error';
+    if (failure is ServerFailure) {
+      return failure.message;
+    } else if (failure is LocalFailure) {
+      return 'Local Error';
+    } else {
+      return 'Unexpected Error';
     }
   }
 }

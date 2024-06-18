@@ -2,8 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../domain/entities/credentials.dart';
-import '../blocs/login_bloc.dart';
-import '../blocs/login_event.dart';
+import '../blocs/bloc.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({super.key});
@@ -63,23 +62,27 @@ class _LoginFormState extends State<LoginForm> {
         Row(
           children: <Widget>[
             Expanded(
-              child: ElevatedButton(
-                onPressed: () {
-                  final credentials = Credentials(
-                      username: _usernameController.text,
-                      password: _passwordController.text);
-                  BlocProvider.of<LoginBloc>(context).add(
-                    Submitted(credentials: credentials),
-                  );
-                },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blue,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(4),
+              child: BlocBuilder<LoginBloc, LoginState>(
+                builder: (context, state) => ElevatedButton(
+                  onPressed: () {
+                    final credentials = Credentials(
+                        username: _usernameController.text,
+                        password: _passwordController.text);
+                    BlocProvider.of<LoginBloc>(context).add(
+                      Submitted(credentials: credentials),
+                    );
+                  },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(4),
+                    ),
                   ),
+                  child: state is LoginLoading
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : const Text('Sign in'),
                 ),
-                child: const Text('Sign in'),
               ),
             )
           ],
