@@ -12,10 +12,14 @@ import '../features/login/domain/usecases/logout_user.dart';
 import '../features/login/presentation/blocs/bloc.dart';
 import '../features/login/presentation/pages/login_screen.dart';
 import '../features/selection/presentation/pages/selection_screen.dart';
-import '../features/summary/presentation/pages/rocord_list.dart';
+import '../features/summary/presentation/pages/record_list.dart';
 import '../navigation_drawer.dart';
 import 'network/network_info.dart';
 import 'utils/utils.dart';
+
+void main() {
+  runApp(MyApp());
+}
 
 class MyApp extends StatelessWidget {
   late final http.Client client;
@@ -39,7 +43,7 @@ class MyApp extends StatelessWidget {
         FocusManager.instance.primaryFocus?.unfocus();
       },
       child: Scaffold(
-        drawer: child is! LoginScreen ? const MyDrawer() : null,
+        drawer: const MyDrawer(),
         appBar: AppBar(
           toolbarHeight: 0,
           systemOverlayStyle: const SystemUiOverlayStyle(
