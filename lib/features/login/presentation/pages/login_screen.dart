@@ -35,14 +35,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   BlocListener<LoginBloc, LoginState>(
                     bloc: context.read<LoginBloc>(),
                     listener: (context, state) {
-                      if (state is LoginError) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(state.message),
-                            backgroundColor: Colors.red,
-                          ),
-                        );
-                      } else if (state is LoginSuccess) {
+                      if (state is LoginSuccess) {
                         Navigator.of(context)
                             .pushReplacementNamed('/selection');
                       }

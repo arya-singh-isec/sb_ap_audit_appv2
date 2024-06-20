@@ -115,7 +115,7 @@ void main() {
       // Assert Later
       final expected = [
         LoginLoading(),
-        LoginError(message: 'Server Error!'),
+        LogoutError(message: 'Server Error!'),
       ];
       expectLater(bloc.stream, emitsInOrder(expected));
       // Act

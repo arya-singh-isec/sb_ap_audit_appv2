@@ -23,4 +23,9 @@ class LoginSuccess extends LoginState {
   LoginSuccess({required this.user}) : super([user]);
 }
 
+class LogoutError extends LoginState {
+  final String message;
+  LogoutError({required this.message}) : super([message]);
+}
+
 class LogoutSuccess extends LoginState {}
