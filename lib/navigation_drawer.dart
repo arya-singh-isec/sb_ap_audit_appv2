@@ -1,34 +1,45 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+
+import 'features/login/presentation/blocs/bloc.dart';
 
 class MyDrawer extends StatelessWidget {
   const MyDrawer({super.key});
 
- @override
+  @override
   Widget build(BuildContext context) {
     return Drawer(
+      width: MediaQuery.of(context).size.width * 0.6,
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
-          const DrawerHeader(
-            decoration: BoxDecoration(
+          DrawerHeader(
+            decoration: const BoxDecoration(
               color: Color.fromARGB(255, 67, 70, 71),
             ),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
+                const Icon(
                   Icons.account_circle,
-                  size: 100,
+                  size: 60,
                   color: Colors.white,
                 ),
-                SizedBox(height: 20, ),
-                Text(
-                  'Login By',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 10,
-                  ),
+                const SizedBox(
+                  height: 20,
                 ),
+                BlocBuilder<LoginBloc, LoginState>(builder: (context, state) {
+                  if (state is LoginSuccess || state is LogoutError) {
+                    return Text(
+                      'Login by ${(state as LoginSuccess).user!.name}',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 14,
+                      ),
+                    );
+                  }
+                  return Container();
+                }),
               ],
             ),
           ),
@@ -45,7 +56,7 @@ class MyDrawer extends StatelessWidget {
             title: const Text('Summary'),
             onTap: () {
               Navigator.pop(context);
-              Navigator.of(context).pushReplacementNamed( '/summary');
+              Navigator.of(context).pushReplacementNamed('/summary');
             },
           ),
           ListTile(
@@ -53,7 +64,7 @@ class MyDrawer extends StatelessWidget {
             title: const Text('Log out'),
             onTap: () {
               Navigator.pop(context);
-              Navigator.of(context).pushReplacementNamed('/login');
+              BlocProvider.of<LoginBloc>(context).add(const Submitted());
             },
           ),
         ],

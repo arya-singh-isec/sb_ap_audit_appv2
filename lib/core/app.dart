@@ -9,13 +9,13 @@ import '../features/login/data/repositories/user_repository_impl.dart';
 import '../features/login/domain/repositories/user_repository.dart';
 import '../features/login/domain/usecases/login_user.dart';
 import '../features/login/domain/usecases/logout_user.dart';
-import '../features/login/presentation/blocs/login_bloc.dart';
+import '../features/login/presentation/blocs/bloc.dart';
 import '../features/login/presentation/pages/login_screen.dart';
 import '../features/selection/presentation/pages/selection_screen.dart';
 import '../features/summary/presentation/pages/rocord_list.dart';
 import '../navigation_drawer.dart';
 import 'network/network_info.dart';
-import 'utils/input_validator.dart';
+import 'utils/utils.dart';
 
 class MyApp extends StatelessWidget {
   late final http.Client client;
@@ -33,7 +33,7 @@ class MyApp extends StatelessWidget {
         remoteDataSource: userRemoteDataSource, networkInfo: networkInfo);
   }
 
-  Widget _wrapWithScaffold(Widget? child) {
+  Widget _wrapWithScaffold(Widget child) {
     return GestureDetector(
       onTap: () {
         FocusManager.instance.primaryFocus?.unfocus();
@@ -46,7 +46,18 @@ class MyApp extends StatelessWidget {
             statusBarColor: Color.fromARGB(255, 128, 0, 0),
           ),
         ),
-        body: child,
+        body: BlocListener<LoginBloc, LoginState>(
+          listener: (context, state) {
+            if (state is LogoutError) {
+              showSnackbar(context, state.message);
+            } else if (state is LoginError) {
+              showSnackbar(context, state.message);
+            } else if (state is LogoutSuccess) {
+              Navigator.of(context).pushReplacementNamed('/login');
+            }
+          },
+          child: child,
+        ),
       ),
     );
   }

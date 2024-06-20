@@ -32,6 +32,15 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         emit(LoginEmpty());
       }, (credentials) async {
         emit(LoginLoading());
+        // await Future.delayed(const Duration(seconds: 3));
+        // emit(
+        //   LoginSuccess(
+        //     user: const User(
+        //         id: '1',
+        //         name: 'Arya Singh',
+        //         email: 'arya.singh@icicisecurities.com'),
+        //   ),
+        // );
         result = await loginUser.execute(credentials);
         result?.fold(
           (failure) {
@@ -43,11 +52,15 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         );
       });
     } else {
+      final prevState = state;
       emit(LoginLoading());
       result = await logoutUser.execute();
       result?.fold(
-        (failure) => emit(LoginError(message: _mapFailureToMessage(failure))),
-        (val) => emit(val is User ? LoginSuccess(user: val) : LogoutSuccess()),
+        (failure) {
+          emit(LogoutError(message: _mapFailureToMessage(failure)));
+          emit(prevState);
+        },
+        (val) => emit(LogoutSuccess()),
       );
     }
   }

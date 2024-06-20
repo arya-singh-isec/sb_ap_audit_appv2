@@ -37,10 +37,10 @@ class _LoginFormState extends State<LoginForm> {
           controller: _usernameController,
           decoration: const InputDecoration(
             labelText: 'Enter NT Username',
-            border: OutlineInputBorder(),
-            constraints: BoxConstraints(
-              maxHeight: 50,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(16)),
             ),
+            contentPadding: EdgeInsets.all(12),
           ),
           onSubmitted: (_) {
             FocusScope.of(context).requestFocus(_passwordFocusNode);
@@ -52,10 +52,10 @@ class _LoginFormState extends State<LoginForm> {
           controller: _passwordController,
           decoration: const InputDecoration(
             labelText: 'Enter NT Password',
-            border: OutlineInputBorder(),
-            constraints: BoxConstraints(
-              maxHeight: 50,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(16)),
             ),
+            contentPadding: EdgeInsets.all(12),
           ),
         ),
         const SizedBox(height: 20),
@@ -80,7 +80,14 @@ class _LoginFormState extends State<LoginForm> {
                     ),
                   ),
                   child: state is LoginLoading
-                      ? const CircularProgressIndicator(color: Colors.white)
+                      ? const SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2.0,
+                          ),
+                        )
                       : const Text('Sign in'),
                 ),
               ),
