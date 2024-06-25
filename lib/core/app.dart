@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
 import 'package:internet_connection_checker/internet_connection_checker.dart';
@@ -14,6 +13,7 @@ import '../features/login/presentation/pages/login_screen.dart';
 import '../features/selection/presentation/pages/selection_screen.dart';
 import '../features/summary/presentation/pages/record_list.dart';
 import '../navigation_drawer.dart';
+import 'app_bar.dart';
 import 'network/network_info.dart';
 import 'utils/utils.dart';
 
@@ -37,19 +37,17 @@ class MyApp extends StatelessWidget {
         remoteDataSource: userRemoteDataSource, networkInfo: networkInfo);
   }
 
-  Widget _wrapWithScaffold(Widget child) {
+  final ValueNotifier<String> appBarTitleNotifier = ValueNotifier('root');
+
+  Widget _wrapWithScaffold(
+      BuildContext context, Widget child, String appBarTitle) {
     return GestureDetector(
       onTap: () {
         FocusManager.instance.primaryFocus?.unfocus();
       },
       child: Scaffold(
         drawer: const MyDrawer(),
-        appBar: AppBar(
-          toolbarHeight: 0,
-          systemOverlayStyle: const SystemUiOverlayStyle(
-            statusBarColor: Color.fromARGB(255, 128, 0, 0),
-          ),
-        ),
+        appBar: CustomAppBar(initialTitle: appBarTitle),
         body: BlocListener<LoginBloc, LoginState>(
           listener: (context, state) {
             if (state is LogoutError) {
@@ -78,17 +76,23 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ],
-      child: MaterialApp(
-        routes: <String, WidgetBuilder>{
-          '/login': (BuildContext context) =>
-              _wrapWithScaffold(const LoginScreen()),
-          '/selection': (BuildContext context) =>
-              _wrapWithScaffold(const SelectionScreen()),
-          '/summary': (BuildContext context) =>
-              _wrapWithScaffold(const RecordListPage()),
-        },
-        initialRoute: '/login',
-        title: 'My App',
+      child: AppBarProvider(
+        titleNotifier: appBarTitleNotifier,
+        child: MaterialApp(
+          theme: ThemeData(
+            primarySwatch: Colors.blue,
+            visualDensity: VisualDensity.adaptivePlatformDensity,
+          ),
+          title: 'My App',
+          initialRoute: '/login',
+          routes: {
+            '/login': (_) => _wrapWithScaffold(_, const LoginScreen(), ''),
+            '/selection': (_) => _wrapWithScaffold(
+                _, const SelectionScreen(), 'Partner Selection'),
+            '/summary': (_) =>
+                _wrapWithScaffold(_, const RecordListPage(), 'Summary'),
+          },
+        ),
       ),
     );
   }
