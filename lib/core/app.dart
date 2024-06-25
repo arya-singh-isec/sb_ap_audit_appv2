@@ -10,6 +10,7 @@ import '../features/login/domain/usecases/login_user.dart';
 import '../features/login/domain/usecases/logout_user.dart';
 import '../features/login/presentation/blocs/bloc.dart';
 import '../features/login/presentation/pages/login_screen.dart';
+import '../features/questionTable/presentation/pages/rejected_record_page.dart';
 import '../features/selection/presentation/pages/selection_screen.dart';
 import '../features/summary/presentation/pages/record_list.dart';
 import '../navigation_drawer.dart';
@@ -91,6 +92,18 @@ class MyApp extends StatelessWidget {
                 _, const SelectionScreen(), 'Partner Selection'),
             '/summary': (_) =>
                 _wrapWithScaffold(_, const RecordListPage(), 'Summary'),
+          },
+          onGenerateRoute: (RouteSettings settings) {
+            if (settings.name == '/rejectedRecord') {
+              final args = settings.arguments as RejectedRecordPageArguments;
+              return MaterialPageRoute(builder: (context) {
+                return _wrapWithScaffold(
+                    context,
+                    RejectedRecordPage(record: args.record),
+                    '${args.record.name} Details');
+              });
+            }
+            return null;
           },
         ),
       ),
