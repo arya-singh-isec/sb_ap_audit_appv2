@@ -14,11 +14,22 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       builder: (context, title, child) {
         return AppBar(
           systemOverlayStyle: const SystemUiOverlayStyle(
-            statusBarColor: Color.fromARGB(255, 128, 0, 0),
+            statusBarColor: Color(0xFF800000),
+            statusBarIconBrightness: Brightness.light,
           ),
-          title: Text(title),
-          backgroundColor: const Color.fromARGB(255, 178, 34, 34),
+          title: Text(
+            title,
+            style: const TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w500,
+              letterSpacing: 0.5,
+            ),
+          ),
+          backgroundColor: const Color(0xFFB22222),
           foregroundColor: Colors.white,
+          elevation: 2,
+          shadowColor: Colors.black.withOpacity(0.3),
+          toolbarHeight: 48,
         );
       },
     );
@@ -27,7 +38,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Size get preferredSize => titleNotifier.value.isEmpty
       ? Size.zero
-      : const Size.fromHeight(kToolbarHeight);
+      : const Size.fromHeight(48); // Match the toolbarHeight
 }
 
 class AppBarProvider extends InheritedWidget {

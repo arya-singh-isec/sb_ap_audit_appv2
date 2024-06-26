@@ -1,0 +1,7 @@
+{
+    "success": true,
+    "data": [
+        {"data": {"id": "1", "name": "Partner A"}},
+        {"data": {"id": "2", "name": "Partner B"}}
+    ]
+}

@@ -1,8 +1,6 @@
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
-import 'package:sb_ap_audit_appv2/core/error/exceptions.dart';
 import 'package:sb_ap_audit_appv2/features/login/data/models/user_model.dart';
 import 'package:sb_ap_audit_appv2/features/login/domain/entities/user.dart';
 
@@ -20,8 +18,8 @@ void main() {
   group('fromJson', () {
     final Map<String, dynamic> jsonMapOnSuccess =
         json.decode(fixture('user_login_success.json'));
-    final Map<String, dynamic> jsonMapOnFailure =
-        json.decode(fixture('user_login_failure.json'));
+    // final Map<String, dynamic> jsonMapOnFailure =
+    //     json.decode(fixture('user_login_failure.json'));
     test('should return a valid model on successful login', () async {
       // Act
       final result = UserModel.fromJson(jsonMapOnSuccess);
