@@ -11,6 +11,11 @@ import '../features/login/domain/usecases/logout_user.dart';
 import '../features/login/presentation/blocs/bloc.dart';
 import '../features/login/presentation/pages/login_screen.dart';
 import '../features/questionTable/presentation/pages/rejected_record_page.dart';
+import '../features/selection/data/datasources/partners_remote_data_source.dart';
+import '../features/selection/data/repositories/partners_repository_impl.dart';
+import '../features/selection/domain/repositories/partners_repository.dart';
+import '../features/selection/domain/usecases/get_partners.dart';
+import '../features/selection/presentation/blocs/get_partners_bloc.dart';
 import '../features/selection/presentation/pages/selection_screen.dart';
 import '../features/summary/presentation/pages/record_list.dart';
 import '../navigation_drawer.dart';
@@ -26,6 +31,8 @@ class MyApp extends StatelessWidget {
   late final http.Client client;
   late final UserRemoteDataSource userRemoteDataSource;
   late final UserRepository userRepository;
+  late final PartnersRemoteDataSource partnersRemoteDataSource;
+  late final PartnersRepository partnersRepository;
   late final NetworkInfo networkInfo;
   late final InternetConnectionChecker connectionChecker;
 
@@ -36,6 +43,9 @@ class MyApp extends StatelessWidget {
     userRemoteDataSource = UserRemoteDataSourceImpl(client: client);
     userRepository = UserRepositoryImpl(
         remoteDataSource: userRemoteDataSource, networkInfo: networkInfo);
+    partnersRemoteDataSource = PartnersRemoteDataSourceImpl(client: client);
+    partnersRepository = PartnersRepositoryImpl(
+        remoteDataSource: partnersRemoteDataSource, networkInfo: networkInfo);
   }
 
   final ValueNotifier<String> appBarTitleNotifier = ValueNotifier('root');
@@ -74,6 +84,11 @@ class MyApp extends StatelessWidget {
             loginUser: LoginUser(userRepository),
             logoutUser: LogoutUser(userRepository),
             inputValidator: InputValidator(),
+          ),
+        ),
+        BlocProvider<GetPartnersBloc>(
+          create: (context) => GetPartnersBloc(
+            getPartners: GetPartners(repository: partnersRepository),
           ),
         ),
       ],

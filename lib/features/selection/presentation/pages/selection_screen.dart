@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/app_bar.dart';
+import '../blocs/get_partners_bloc.dart';
+import '../blocs/get_partners_event.dart';
+import '../blocs/get_partners_state.dart';
 
 class SelectionScreen extends StatefulWidget {
   const SelectionScreen({super.key});
@@ -15,14 +19,13 @@ class _SelectionScreenState extends State<SelectionScreen> {
   static const BorderRadius _borderRadius =
       BorderRadius.all(Radius.circular(8));
 
-  static const List<String> _partners = ['Partner A', 'Partner B', 'Partner C'];
-  static const Map<String, List<String>> _teams = {
-    'TeamMember A': ['Bah Bah black sheep', 'Sprinter'],
-    'TeamMember B': ['Tom&Jerry', 'Ben10'],
-  };
-  static const List<String> _teamMembers = ['TeamMember A', 'TeamMember B'];
-  static const List<String> _fiscalYears = ['FY 2024-2025', 'FY 2023-2024'];
-  static const List<String> _periods = ['First half', 'Second half'];
+  // static const Map<String, List<String>> _teams = {
+  //   'TeamMember A': ['Bah Bah black sheep', 'Sprinter'],
+  //   'TeamMember B': ['Tom&Jerry', 'Ben10'],
+  // };
+  // static const List<String> _teamMembers = ['TeamMember A', 'TeamMember B'];
+  // static const List<String> _fiscalYears = ['FY 2024-2025', 'FY 2023-2024'];
+  // static const List<String> _periods = ['First half', 'Second half'];
 
   final Map<String, String?> _selections = {
     'value': null,
@@ -38,7 +41,6 @@ class _SelectionScreenState extends State<SelectionScreen> {
   @override
   void initState() {
     super.initState();
-    // Create a FocusNode for each dropdown
     for (var key in [
       'partner',
       'teamMember',
@@ -48,6 +50,8 @@ class _SelectionScreenState extends State<SelectionScreen> {
     ]) {
       _focusNodes[key] = FocusNode();
     }
+    // Get Partners List
+    BlocProvider.of<GetPartnersBloc>(context).add(FetchPartnersList());
   }
 
   @override
@@ -65,6 +69,9 @@ class _SelectionScreenState extends State<SelectionScreen> {
 
   void _updateSelection(String key, String? value) {
     setState(() {
+      if (key == 'teamMember') {
+        _selections['teamMember2'] = null;
+      }
       _selections[key] = value;
     });
   }
@@ -79,32 +86,32 @@ class _SelectionScreenState extends State<SelectionScreen> {
           children: [
             _buildSelectionContainer(),
             const SizedBox(height: 8),
-            _buildDropdown(
-              'partner',
-              _partners,
-              'Select Partner',
-              visible: _selections['value'] == 'partner',
+            BlocBuilder<GetPartnersBloc, GetPartnersState>(
+              builder: (_, state) => _buildDropdown(
+                'partner',
+                state is PartnersLoaded ? state.partners : [],
+                'Select Partner',
+                visible: _selections['value'] == 'partner',
+              ),
             ),
-            _buildDropdown(
-              'teamMember',
-              _teamMembers,
-              'Select Team Member',
-              visible: _selections['value'] == 'team_member',
-            ),
-            const SizedBox(height: 8),
-            _buildDropdown(
-              'teamMember2',
-              _teams[_selections['teamMember']] ?? [],
-              'Select Team Member',
-              visible: _selections['value'] == 'team_member' &&
-                  _selections['teamMember'] != null,
-            ),
-            const SizedBox(height: 20),
+            // _buildDropdown(
+            //   'teamMember',
+            //   _teamMembers,
+            //   'Select Team Member',
+            //   visible: _selections['value'] == 'team_member',
+            // ),
+            // _buildDropdown(
+            //   'teamMember2',
+            //   _teams[_selections['teamMember']] ?? [],
+            //   'Select Team Member',
+            //   visible: _selections['value'] == 'team_member' &&
+            //       _selections['teamMember'] != null,
+            // ),
             _buildSalesInspectionSection(),
             const SizedBox(height: 8),
-            _buildDropdown('fiscalYear', _fiscalYears, 'Select Fiscal Year'),
+            // _buildDropdown('fiscalYear', _fiscalYears, 'Select Fiscal Year'),
             const SizedBox(height: 8),
-            _buildDropdown('period', _periods, 'Select Period'),
+            // _buildDropdown('period', _periods, 'Select Period'),
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
@@ -139,8 +146,7 @@ class _SelectionScreenState extends State<SelectionScreen> {
             'Please select Partner or Team Member',
             style: TextStyle(fontWeight: FontWeight.bold),
           ),
-          const SizedBox(
-              height: 8), // Add a small gap between the text and radio buttons
+          const SizedBox(height: 8),
           Row(
             children: <Widget>[
               _buildRadioListTile('Partner', 'partner'),
@@ -179,7 +185,7 @@ class _SelectionScreenState extends State<SelectionScreen> {
     );
   }
 
-  Widget _buildDropdown(String key, List<String> items, String hint,
+  Widget _buildDropdown(String key, List<dynamic>? items, String hint,
       {bool visible = true}) {
     return Visibility(
       visible: visible,
@@ -187,33 +193,35 @@ class _SelectionScreenState extends State<SelectionScreen> {
       maintainState: true,
       child: ButtonTheme(
         alignedDropdown: true,
-        child: DropdownButtonFormField<String>(
-          value: _selections[key],
-          decoration: InputDecoration(
-            hintText: hint,
-            border: const OutlineInputBorder(),
-            contentPadding:
-                const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-            isDense: true,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
+          child: DropdownButtonFormField<dynamic>(
+            value: _selections[key],
+            decoration: InputDecoration(
+              hintText: hint,
+              border: const OutlineInputBorder(),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+              isDense: true,
+            ),
+            items: items!
+                .map((item) => DropdownMenuItem(
+                      value: item.id,
+                      child: Text(item.name),
+                    ))
+                .toList(),
+            onChanged: (value) {
+              _updateSelection(key, value);
+              _unfocusAll();
+            },
+            borderRadius: _borderRadius,
+            isExpanded: true,
+            icon: const Icon(Icons.arrow_drop_down),
+            iconSize: 24,
+            elevation: 16,
+            style: const TextStyle(color: Colors.black, fontSize: 16),
+            focusNode: _focusNodes[key],
           ),
-          items: items
-              .map((value) => DropdownMenuItem(
-                    value: value,
-                    child: Text(value),
-                  ))
-              .toList(),
-          onChanged: (value) {
-            _updateSelection(key, value);
-            _unfocusAll();
-          },
-          borderRadius: _borderRadius,
-          isExpanded: true, // Ensure the button uses the full width
-          icon: const Icon(
-              Icons.arrow_drop_down), // Optional: customize the dropdown icon
-          iconSize: 24, // Optional: adjust icon size
-          elevation: 16, // Optional: adjust the elevation of the dropdown menu
-          style: const TextStyle(color: Colors.black, fontSize: 16),
-          focusNode: _focusNodes[key], // Optional: adjust text style
         ),
       ),
     );
