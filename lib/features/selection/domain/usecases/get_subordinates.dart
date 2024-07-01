@@ -9,7 +9,7 @@ class GetSubordinates {
 
   GetSubordinates({required this.repository});
 
-  Future<Either<Failure, List<TeamMember>>?>? execute(
+  Future<Either<Failure, List<TeamMember>?>?>? execute(
       String? supervisorId) async {
     return await repository.getSubordinates(supervisorId);
   }

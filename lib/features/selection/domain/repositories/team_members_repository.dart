@@ -5,8 +5,8 @@ import '../entities/team_member.dart';
 
 abstract class TeamMembersRepository {
   // Added Null subtype for unit testss
-  Future<Either<Failure, List<TeamMember>>?>? getTeamMembers();
+  Future<Either<Failure, List<TeamMember>?>?>? getTeamMembers();
   // Added Null subtype for unit tests
-  Future<Either<Failure, List<TeamMember>>?>? getSubordinates(
+  Future<Either<Failure, List<TeamMember>?>?>? getSubordinates(
       String? supervisorId);
 }

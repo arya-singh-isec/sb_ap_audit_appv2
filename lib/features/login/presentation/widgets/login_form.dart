@@ -32,13 +32,13 @@ class _LoginFormState extends State<LoginForm> {
           'Login',
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: 20),
         TextField(
           controller: _usernameController,
           decoration: const InputDecoration(
             labelText: 'Enter NT Username',
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(16)),
+              borderRadius: BorderRadius.all(Radius.circular(24)),
             ),
             contentPadding: EdgeInsets.all(12),
           ),
@@ -53,7 +53,7 @@ class _LoginFormState extends State<LoginForm> {
           decoration: const InputDecoration(
             labelText: 'Enter NT Password',
             border: OutlineInputBorder(
-              borderRadius: BorderRadius.all(Radius.circular(16)),
+              borderRadius: BorderRadius.all(Radius.circular(24)),
             ),
             contentPadding: EdgeInsets.all(12),
           ),
@@ -76,7 +76,7 @@ class _LoginFormState extends State<LoginForm> {
                     backgroundColor: Colors.blue,
                     foregroundColor: Colors.white,
                     shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(4),
+                      borderRadius: BorderRadius.circular(10),
                     ),
                   ),
                   child: state is LoginLoading
