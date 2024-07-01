@@ -12,6 +12,6 @@ class TeamMemberModel extends TeamMember {
   }
 
   Map<String, dynamic> toJson() {
-    return {id: id, name: name, supervisorId: supervisorId};
+    return {"id": id, "name": name, "supervisorId": supervisorId};
   }
 }

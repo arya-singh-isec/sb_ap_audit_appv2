@@ -12,10 +12,16 @@ import '../features/login/presentation/blocs/bloc.dart';
 import '../features/login/presentation/pages/login_screen.dart';
 import '../features/questionTable/presentation/pages/rejected_record_page.dart';
 import '../features/selection/data/datasources/partners_remote_data_source.dart';
+import '../features/selection/data/datasources/team_members_remote_data_source.dart';
 import '../features/selection/data/repositories/partners_repository_impl.dart';
+import '../features/selection/data/repositories/team_members_repository_impl.dart';
 import '../features/selection/domain/repositories/partners_repository.dart';
+import '../features/selection/domain/repositories/team_members_repository.dart';
 import '../features/selection/domain/usecases/get_partners.dart';
+import '../features/selection/domain/usecases/get_subordinates.dart';
+import '../features/selection/domain/usecases/get_team_members.dart';
 import '../features/selection/presentation/blocs/get_partners_bloc.dart';
+import '../features/selection/presentation/blocs/get_team_members_bloc.dart';
 import '../features/selection/presentation/pages/selection_screen.dart';
 import '../features/summary/presentation/pages/record_list.dart';
 import '../navigation_drawer.dart';
@@ -33,6 +39,8 @@ class MyApp extends StatelessWidget {
   late final UserRepository userRepository;
   late final PartnersRemoteDataSource partnersRemoteDataSource;
   late final PartnersRepository partnersRepository;
+  late final TeamMembersRemoteDataSource teamMembersRemoteDataSource;
+  late final TeamMembersRepository teamMembersRepository;
   late final NetworkInfo networkInfo;
   late final InternetConnectionChecker connectionChecker;
 
@@ -46,6 +54,11 @@ class MyApp extends StatelessWidget {
     partnersRemoteDataSource = PartnersRemoteDataSourceImpl(client: client);
     partnersRepository = PartnersRepositoryImpl(
         remoteDataSource: partnersRemoteDataSource, networkInfo: networkInfo);
+    teamMembersRemoteDataSource =
+        TeamMembersRemoteDataSourceImpl(client: client);
+    teamMembersRepository = TeamMembersRepositoryImpl(
+        remoteDataSource: teamMembersRemoteDataSource,
+        networkInfo: networkInfo);
   }
 
   final ValueNotifier<String> appBarTitleNotifier = ValueNotifier('root');
@@ -91,6 +104,12 @@ class MyApp extends StatelessWidget {
             getPartners: GetPartners(repository: partnersRepository),
           ),
         ),
+        BlocProvider<GetTeamMembersBloc>(
+          create: (_) => GetTeamMembersBloc(
+            getTeamMembers: GetTeamMembers(repository: teamMembersRepository),
+            getSubordinates: GetSubordinates(repository: teamMembersRepository),
+          ),
+        )
       ],
       child: AppBarProvider(
         titleNotifier: appBarTitleNotifier,

@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/app_bar.dart';
-import '../blocs/get_partners_bloc.dart';
-import '../blocs/get_partners_event.dart';
-import '../blocs/get_partners_state.dart';
+import '../../domain/entities/partner.dart';
+import '../../domain/entities/team_member.dart';
+import '../blocs/get_team_members_bloc.dart';
+import '../blocs/get_team_members_event.dart';
+import '../blocs/get_team_members_state.dart';
+import '../blocs/partners_bloc.dart';
 
 class SelectionScreen extends StatefulWidget {
   const SelectionScreen({super.key});
@@ -19,21 +22,17 @@ class _SelectionScreenState extends State<SelectionScreen> {
   static const BorderRadius _borderRadius =
       BorderRadius.all(Radius.circular(8));
 
-  // static const Map<String, List<String>> _teams = {
-  //   'TeamMember A': ['Bah Bah black sheep', 'Sprinter'],
-  //   'TeamMember B': ['Tom&Jerry', 'Ben10'],
-  // };
-  // static const List<String> _teamMembers = ['TeamMember A', 'TeamMember B'];
-  // static const List<String> _fiscalYears = ['FY 2024-2025', 'FY 2023-2024'];
-  // static const List<String> _periods = ['First half', 'Second half'];
+  // Dummy data
+  static const _fiscalYears = ['FY 2024-2025', 'FY 2023-2024'];
+  static const _periods = ['First half', 'Second half'];
 
-  final Map<String, String?> _selections = {
-    'value': null,
+  // State variables
+  String? _selectionType;
+  final List<String?> _teamMemberSelections = [null];
+  final Map<String, String?> _otherSelections = {
     'partner': null,
-    'teamMember': null,
-    'teamMember2': null,
     'fiscalYear': null,
-    'period': null,
+    'period': null
   };
 
   final Map<String, FocusNode> _focusNodes = {};
@@ -41,17 +40,13 @@ class _SelectionScreenState extends State<SelectionScreen> {
   @override
   void initState() {
     super.initState();
-    for (var key in [
-      'partner',
-      'teamMember',
-      'teamMember2',
-      'fiscalYear',
-      'period'
-    ]) {
+    for (var key in ['partner', 'teamMember', 'fiscalYear', 'period']) {
       _focusNodes[key] = FocusNode();
     }
     // Get Partners List
     BlocProvider.of<GetPartnersBloc>(context).add(FetchPartnersList());
+    // Get TeamMembers List
+    BlocProvider.of<GetTeamMembersBloc>(context).add(FetchTeamMembersList());
   }
 
   @override
@@ -69,11 +64,31 @@ class _SelectionScreenState extends State<SelectionScreen> {
 
   void _updateSelection(String key, String? value) {
     setState(() {
-      if (key == 'teamMember') {
-        _selections['teamMember2'] = null;
+      if (key == 'value') {
+        _selectionType = value;
+        _teamMemberSelections.clear();
+        _teamMemberSelections.add(null);
+      } else {
+        _otherSelections[key] = value;
       }
-      _selections[key] = value;
     });
+  }
+
+  void _updateTeamMemberSelection(int level, String? value) {
+    setState(() {
+      if (level >= _teamMemberSelections.length) {
+        _teamMemberSelections.add(value);
+      } else {
+        _teamMemberSelections[level] = value;
+        _teamMemberSelections.removeRange(
+            level + 1, _teamMemberSelections.length);
+      }
+    });
+
+    if (value != null) {
+      BlocProvider.of<GetTeamMembersBloc>(context)
+          .add(FetchSubordinatesList(supervisorId: value));
+    }
   }
 
   @override
@@ -87,36 +102,46 @@ class _SelectionScreenState extends State<SelectionScreen> {
             _buildSelectionContainer(),
             const SizedBox(height: 8),
             BlocBuilder<GetPartnersBloc, GetPartnersState>(
-              builder: (_, state) => _buildDropdown(
+              builder: (_, state) => _buildDropdown<Partner>(
                 'partner',
                 state is PartnersLoaded ? state.partners : [],
                 'Select Partner',
-                visible: _selections['value'] == 'partner',
+                visible: _selectionType == 'partner',
               ),
             ),
-            // _buildDropdown(
-            //   'teamMember',
-            //   _teamMembers,
-            //   'Select Team Member',
-            //   visible: _selections['value'] == 'team_member',
-            // ),
-            // _buildDropdown(
-            //   'teamMember2',
-            //   _teams[_selections['teamMember']] ?? [],
-            //   'Select Team Member',
-            //   visible: _selections['value'] == 'team_member' &&
-            //       _selections['teamMember'] != null,
-            // ),
+            BlocBuilder<GetTeamMembersBloc, GetTeamMembersState>(
+              builder: (_, state) => _buildDropdown<TeamMember>(
+                'teamMember_0',
+                state is TeamMembersHierarchyLoaded
+                    ? state.topLevelMembers
+                    : [],
+                'Select Team Member',
+                visible: _selectionType == 'team_member',
+              ),
+            ),
+            BlocBuilder<GetTeamMembersBloc, GetTeamMembersState>(
+              builder: (_, state) {
+                if (state is TeamMembersHierarchyLoaded) {
+                  return Column(
+                    children: [
+                      ..._buildSubordinateDropdowns(state.subordinates),
+                    ],
+                  );
+                }
+                return Container();
+              },
+            ),
             _buildSalesInspectionSection(),
             const SizedBox(height: 8),
-            // _buildDropdown('fiscalYear', _fiscalYears, 'Select Fiscal Year'),
+            _buildDropdown<String>(
+                'fiscalYear', _fiscalYears, 'Select Fiscal Year'),
             const SizedBox(height: 8),
-            // _buildDropdown('period', _periods, 'Select Period'),
+            _buildDropdown<String>('period', _periods, 'Select Period'),
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
                 AppBarProvider.of(context).titleNotifier.value =
-                    'Bah Bah Black Sheep';
+                    'How you doin!';
               },
               style: ElevatedButton.styleFrom(
                 shape:
@@ -165,7 +190,7 @@ class _SelectionScreenState extends State<SelectionScreen> {
         children: [
           Radio<String>(
             value: value,
-            groupValue: _selections['value'],
+            groupValue: _selectionType,
             onChanged: (value) => _updateSelection('value', value),
             activeColor: Colors.black,
             materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
@@ -185,46 +210,122 @@ class _SelectionScreenState extends State<SelectionScreen> {
     );
   }
 
-  Widget _buildDropdown(String key, List<dynamic>? items, String hint,
+  Widget _buildTeamMemberDropdown(
+      int level, List<TeamMember>? items, String hint,
       {bool visible = true}) {
+    return Visibility(
+      visible: visible,
+      maintainAnimation: true,
+      maintainState: true,
+      child: RepaintBoundary(
+        child: ButtonTheme(
+          alignedDropdown: true,
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
+            child: DropdownButtonFormField<String>(
+              key: ValueKey('dropdown_$level'),
+              value: level < _teamMemberSelections.length
+                  ? _teamMemberSelections[level]
+                  : null,
+              hint: Text(hint),
+              decoration: const InputDecoration(
+                border: OutlineInputBorder(),
+                contentPadding:
+                    EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                isDense: true,
+              ),
+              items: items!
+                  .map((item) => DropdownMenuItem(
+                        key: ValueKey(item.id),
+                        value: item.id,
+                        child: Text(item.name),
+                      ))
+                  .toList(),
+              onChanged: (value) {
+                _updateTeamMemberSelection(level, value);
+                _unfocusAll();
+              },
+              borderRadius: _borderRadius,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildDropdown<T>(String key, List<T>? items, String hint,
+      {bool visible = true}) {
+    if (key.startsWith('teamMember_')) {
+      int level = int.parse(key.split('_')[1]);
+      return _buildTeamMemberDropdown(level, items as List<TeamMember>?, hint,
+          visible: visible);
+    }
+
     return Visibility(
       visible: visible,
       maintainAnimation: true,
       maintainState: true,
       child: ButtonTheme(
         alignedDropdown: true,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
-          child: DropdownButtonFormField<dynamic>(
-            value: _selections[key],
-            decoration: InputDecoration(
-              hintText: hint,
-              border: const OutlineInputBorder(),
-              contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-              isDense: true,
-            ),
-            items: items!
-                .map((item) => DropdownMenuItem(
-                      value: item.id,
-                      child: Text(item.name),
-                    ))
-                .toList(),
-            onChanged: (value) {
-              _updateSelection(key, value);
-              _unfocusAll();
-            },
-            borderRadius: _borderRadius,
-            isExpanded: true,
-            icon: const Icon(Icons.arrow_drop_down),
-            iconSize: 24,
-            elevation: 16,
-            style: const TextStyle(color: Colors.black, fontSize: 16),
-            focusNode: _focusNodes[key],
+        child: DropdownButtonFormField<dynamic>(
+          value: _otherSelections[key],
+          hint: Text(hint),
+          decoration: const InputDecoration(
+            border: OutlineInputBorder(),
+            contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            isDense: true,
           ),
+          items: items
+              ?.map((item) => DropdownMenuItem(
+                    value: item is Partner ? item.id : item,
+                    child: item is Partner
+                        ? Text(item.name)
+                        : Text(item as String),
+                  ))
+              .toList(),
+          onChanged: (value) {
+            _updateSelection(key, value);
+            _unfocusAll();
+          },
+          borderRadius: _borderRadius,
+          focusNode: _focusNodes[key],
         ),
       ),
     );
+  }
+
+  List<Widget> _buildSubordinateDropdowns(
+      Map<String, List<TeamMember>?>? subordinates) {
+    List<Widget> dropdowns = [];
+    String? currentId =
+        _teamMemberSelections.isNotEmpty ? _teamMemberSelections[0] : null;
+    int level = 1;
+
+    while (currentId != null && subordinates!.containsKey(currentId)) {
+      final subordinateList = subordinates[currentId]!;
+
+      if (subordinateList.isNotEmpty) {
+        dropdowns.add(
+          RepaintBoundary(
+            child: _buildDropdown<TeamMember>(
+              'teamMember_$level',
+              subordinateList,
+              'Select Team Member',
+              visible: true,
+            ),
+          ),
+        );
+      }
+
+      if (level < _teamMemberSelections.length) {
+        currentId = _teamMemberSelections[level];
+      } else {
+        break;
+      }
+      level++;
+    }
+
+    return dropdowns;
   }
 
   Widget _buildSalesInspectionSection() {

@@ -9,7 +9,7 @@ class GetTeamMembers {
 
   GetTeamMembers({required this.repository});
 
-  Future<Either<Failure, List<TeamMember>>?>? execute() async {
+  Future<Either<Failure, List<TeamMember>?>?>? execute() async {
     return await repository.getTeamMembers();
   }
 }
