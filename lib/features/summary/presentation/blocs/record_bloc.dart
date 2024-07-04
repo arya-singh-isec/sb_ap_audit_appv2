@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/entities/record.dart';
 import '../../domain/usecases/get_record_data.dart';
 
+
+
 abstract class RecordState {}
 
 class RecordInitial extends RecordState {}

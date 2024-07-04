@@ -7,17 +7,17 @@ import '../../data/repository/record_repository_impl.dart';
 import '../../domain/usecases/get_record_data.dart';
 import '../blocs/record_bloc.dart';
 import '../widget/record_card.dart';
+import '../../../../injection_container.dart' as di;
+
+
 
 class RecordListPage extends StatelessWidget {
-  const RecordListPage({super.key});
+  const RecordListPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final recordRepository = RecordRepositoryImpl();
-    final getRecords = GetRecords(recordRepository);
-
     return BlocProvider(
-      create: (context) => RecordCubit(getRecords: getRecords)..fetchRecords(),
+      create: (context) => di.sl<RecordCubit>()..fetchRecords(),
       child: BlocBuilder<RecordCubit, RecordState>(
         builder: (context, state) {
           if (state is RecordInitial) {
@@ -54,3 +54,50 @@ class RecordListPage extends StatelessWidget {
     );
   }
 }
+
+// class RecordListPage extends StatelessWidget {
+//   const RecordListPage({super.key});
+
+//   @override
+//   Widget build(BuildContext context) {
+//     final recordRepository = RecordRepositoryImpl();
+//     final getRecords = GetRecords(recordRepository);
+
+//     return BlocProvider(
+//       create: (context) => RecordCubit(getRecords: getRecords)..fetchRecords(),
+//       child: BlocBuilder<RecordCubit, RecordState>(
+//         builder: (context, state) {
+//           if (state is RecordInitial) {
+//             return const Center(
+//                 child: Text('Please wait while we fetch data...'));
+//           } else if (state is RecordLoading) {
+//             return const Center(child: CircularProgressIndicator());
+//           } else if (state is RecordLoaded) {
+//             return ListView.builder(
+//               itemCount: state.records.length,
+//               itemBuilder: (context, index) {
+//                 final record = state.records[index];
+//                 return GestureDetector(
+//                   onTap: () {
+//                     if (record.status.contains('REJECTED')) {
+//                       Navigator.pushNamed(
+//                         context,
+//                         '/rejectedRecord',
+//                         arguments: RejectedRecordPageArguments(record: record),
+//                       );
+//                     }
+//                   },
+//                   child: RecordCard(record: record),
+//                 );
+//               },
+//             );
+//           } else if (state is RecordError) {
+//             return Center(child: Text(state.message));
+//           } else {
+//             return const Center(child: Text('Unexpected state'));
+//           }
+//         },
+//       ),
+//     );
+//   }
+// }

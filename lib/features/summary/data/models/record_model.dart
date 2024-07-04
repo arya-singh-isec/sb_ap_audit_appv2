@@ -28,15 +28,4 @@ class RecordModel extends Record {
       initiatedPeriod: json['initiatedPeriod'],
     );
   }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'initiatedDate': initiatedDate.toIso8601String(),
-      'status': status,
-      'initiatedYear': initiatedYear,
-      'initiatedPeriod': initiatedPeriod,
-    };
-  }
 }
