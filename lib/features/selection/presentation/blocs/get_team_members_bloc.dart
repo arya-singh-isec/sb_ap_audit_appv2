@@ -1,14 +1,15 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/error/failures.dart';
+import '../../../../core/logger/logger.dart';
 import '../../domain/entities/team_member.dart';
 import '../../domain/usecases/get_subordinates.dart';
 import '../../domain/usecases/get_team_members.dart';
 import 'get_team_members_event.dart';
 import 'get_team_members_state.dart';
 
-class GetTeamMembersBloc
-    extends Bloc<GetTeamMembersEvent, GetTeamMembersState> {
+class GetTeamMembersBloc extends Bloc<GetTeamMembersEvent, GetTeamMembersState>
+    with BlocLoggy {
   final GetTeamMembers getTeamMembers;
   final GetSubordinates getSubordinates;
 
@@ -68,7 +69,6 @@ class GetTeamMembersBloc
     //     subordinates: newSubordinates,
     //   ),
     // );
-
     final prevState = state;
     if (prevState is! TeamMembersHierarchyLoaded) return;
     emit(TeamMembersLoading());

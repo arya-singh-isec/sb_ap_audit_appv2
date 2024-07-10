@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
 import 'package:internet_connection_checker/internet_connection_checker.dart';
+import 'package:loggy/loggy.dart';
 
 import '../features/login/data/datasources/user_remote_data_source.dart';
 import '../features/login/data/repositories/user_repository_impl.dart';
@@ -33,7 +34,7 @@ void main() {
   runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   late final http.Client client;
   late final UserRemoteDataSource userRemoteDataSource;
   late final UserRepository userRepository;
@@ -61,7 +62,29 @@ class MyApp extends StatelessWidget {
         networkInfo: networkInfo);
   }
 
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> with WidgetsBindingObserver, UiLoggy {
   final ValueNotifier<String> appBarTitleNotifier = ValueNotifier('root');
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    loggy.debug('AppLifecycle state changed to ${state.name}');
+  }
 
   Widget _wrapWithScaffold(
       BuildContext context, Widget child, String appBarTitle) {
@@ -94,20 +117,22 @@ class MyApp extends StatelessWidget {
       providers: [
         BlocProvider<LoginBloc>(
           create: (context) => LoginBloc(
-            loginUser: LoginUser(userRepository),
-            logoutUser: LogoutUser(userRepository),
+            loginUser: LoginUser(widget.userRepository),
+            logoutUser: LogoutUser(widget.userRepository),
             inputValidator: InputValidator(),
           ),
         ),
         BlocProvider<GetPartnersBloc>(
           create: (context) => GetPartnersBloc(
-            getPartners: GetPartners(repository: partnersRepository),
+            getPartners: GetPartners(repository: widget.partnersRepository),
           ),
         ),
         BlocProvider<GetTeamMembersBloc>(
           create: (_) => GetTeamMembersBloc(
-            getTeamMembers: GetTeamMembers(repository: teamMembersRepository),
-            getSubordinates: GetSubordinates(repository: teamMembersRepository),
+            getTeamMembers:
+                GetTeamMembers(repository: widget.teamMembersRepository),
+            getSubordinates:
+                GetSubordinates(repository: widget.teamMembersRepository),
           ),
         )
       ],

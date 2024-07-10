@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:loggy/loggy.dart';
 
-import '../../../../core/app_bar.dart';
 import '../../domain/entities/partner.dart';
 import '../../domain/entities/team_member.dart';
 import '../blocs/get_team_members_bloc.dart';
@@ -16,7 +16,7 @@ class SelectionScreen extends StatefulWidget {
   State<SelectionScreen> createState() => _SelectionScreenState();
 }
 
-class _SelectionScreenState extends State<SelectionScreen> {
+class _SelectionScreenState extends State<SelectionScreen> with UiLoggy {
   static const Color _amberColor = Colors.amber;
   static const EdgeInsets _padding = EdgeInsets.all(16);
   static const BorderRadius _borderRadius =
@@ -40,6 +40,7 @@ class _SelectionScreenState extends State<SelectionScreen> {
   @override
   void initState() {
     super.initState();
+    loggy.debug('Landed successfully on the partner selection screen');
     for (var key in ['partner', 'teamMember', 'fiscalYear', 'period']) {
       _focusNodes[key] = FocusNode();
     }
@@ -63,6 +64,7 @@ class _SelectionScreenState extends State<SelectionScreen> {
   }
 
   void _updateSelection(String key, String? value) {
+    loggy.debug('user selected $value for $key');
     setState(() {
       if (key == 'value') {
         _selectionType = value;
@@ -75,6 +77,7 @@ class _SelectionScreenState extends State<SelectionScreen> {
   }
 
   void _updateTeamMemberSelection(int level, String? value) {
+    loggy.debug('user selected $value for team member level $level');
     setState(() {
       if (level >= _teamMemberSelections.length) {
         _teamMemberSelections.add(value);
@@ -140,8 +143,9 @@ class _SelectionScreenState extends State<SelectionScreen> {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                AppBarProvider.of(context).titleNotifier.value =
-                    'How you doin!';
+                loggy.debug('Submit button pressed');
+                // AppBarProvider.of(context).titleNotifier.value =
+                //     'How you doin!';
               },
               style: ElevatedButton.styleFrom(
                 shape:
