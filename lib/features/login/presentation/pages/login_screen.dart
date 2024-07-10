@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:loggy/loggy.dart';
 
 import '../blocs/bloc.dart';
 import '../widgets/login_form.dart';
@@ -11,7 +12,7 @@ class LoginScreen extends StatefulWidget {
   State<LoginScreen> createState() => _LoginScreenState();
 }
 
-class _LoginScreenState extends State<LoginScreen> {
+class _LoginScreenState extends State<LoginScreen> with UiLoggy {
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
@@ -36,6 +37,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     bloc: context.read<LoginBloc>(),
                     listener: (context, state) {
                       if (state is LoginSuccess) {
+                        loggy.debug(
+                            'Navigated successfully out of login screen');
                         Navigator.of(context)
                             .pushReplacementNamed('/selection');
                       }

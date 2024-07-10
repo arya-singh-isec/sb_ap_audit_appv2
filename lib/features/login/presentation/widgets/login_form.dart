@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:loggy/loggy.dart';
 
+import '../../../../core/logger/logger_config.dart';
 import '../../domain/entities/credentials.dart';
 import '../blocs/bloc.dart';
 
@@ -11,7 +13,7 @@ class LoginForm extends StatefulWidget {
   State<LoginForm> createState() => _LoginFormState();
 }
 
-class _LoginFormState extends State<LoginForm> {
+class _LoginFormState extends State<LoginForm> with UiLoggy {
   final _usernameController = TextEditingController();
   final _passwordController = TextEditingController();
   final _passwordFocusNode = FocusNode();
@@ -65,6 +67,8 @@ class _LoginFormState extends State<LoginForm> {
               child: BlocBuilder<LoginBloc, LoginState>(
                 builder: (context, state) => ElevatedButton(
                   onPressed: () {
+                    loggy.debug('Sign in button pressed');
+                    print(LoggerConfig.auditLogs);
                     final credentials = Credentials(
                         username: _usernameController.text,
                         password: _passwordController.text);

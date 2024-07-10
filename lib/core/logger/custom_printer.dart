@@ -1,9 +1,36 @@
+import 'dart:collection';
 import 'dart:io';
 
+import 'package:equatable/equatable.dart';
 import 'package:loggy/loggy.dart';
 
+// ignore: must_be_immutable
+class Audit extends Equatable {
+  final String logMessage;
+  int recCount;
+
+  Audit({required this.logMessage}) : recCount = 1;
+
+  void increaseCount() {
+    recCount++;
+  }
+
+  @override
+  List<Object?> get props => [logMessage];
+
+  @override
+  String toString() {
+    return '($logMessage [$recCount])';
+  }
+}
+
 class CustomPrinter extends LoggyPrinter {
-  const CustomPrinter();
+  final int _maxAuditSize;
+  final Queue<Audit> _audit;
+
+  CustomPrinter({int maxAuditSize = 5})
+      : _maxAuditSize = maxAuditSize,
+        _audit = Queue<Audit>();
 
   static final Map<LogLevel, String> _levelPrefixes = <LogLevel, String>{
     LogLevel.info: 'I',
@@ -19,6 +46,22 @@ class CustomPrinter extends LoggyPrinter {
     LogLevel.error: AnsiColor(foregroundColor: 9),
   };
 
+  void addLog(item) {
+    if (_audit.length == _maxAuditSize) {
+      _audit.removeFirst();
+    }
+    final toAdd = Audit(logMessage: item);
+    if (_audit.isEmpty || toAdd != _audit.last) {
+      _audit.addLast(toAdd);
+    } else {
+      _audit.last.increaseCount();
+    }
+  }
+
+  List<Audit> getLogs() {
+    return List<Audit>.from(_audit);
+  }
+
   @override
   void onLog(LogRecord record) {
     String logLevel = _levelPrefixes[record.level] ?? '[-]';
@@ -27,9 +70,9 @@ class CustomPrinter extends LoggyPrinter {
         : '(${record.callerFrame?.location.split('/').last})';
     String time = record.time.toIso8601String().split('T')[1];
     final color = _levelColors[record.level] ?? AnsiColor();
-    String stackTraceString = color(record.stackTrace.toString());
-    String message = color(
-        '[$logLevel] [${record.loggerName}] [$caller] $time - ${record.message}');
+    String stackTraceString = record.stackTrace.toString();
+    String message =
+        '[$logLevel] [${record.loggerName}] [$caller] $time - ${record.message}';
 
     // developer.log(
     //   message,
@@ -40,9 +83,10 @@ class CustomPrinter extends LoggyPrinter {
     //   zone: record.zone,
     //   sequenceNumber: record.sequenceNumber,
     // );
-    stdout.writeln(message);
+    stdout.writeln(color(message));
+    addLog('[$logLevel] ${record.message}');
     if (record.level.priority >= LogLevel.error.priority) {
-      stdout.writeln(stackTraceString);
+      stdout.writeln(color(stackTraceString));
     }
   }
 }
