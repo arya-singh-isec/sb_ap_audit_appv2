@@ -1,13 +1,11 @@
 // lib/presentation/pages/rejected_record_page.dart
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:sb_ap_audit_appv2/features/summary/domain/entities/record.dart';
 import 'package:sb_ap_audit_appv2/features/questionTable/presentation/blocs/question_bloc.dart';
-
-import '../../../summary/domain/entities/record.dart';
-import '../../data/repository/question_repository_impl.dart';
-import '../../domain/entities/question.dart';
-import '../../domain/usecases/get_questions.dart';
-import '../widget/question_card.dart';
+import 'package:sb_ap_audit_appv2/features/questionTable/domain/entities/question.dart';
+import 'package:sb_ap_audit_appv2/features/questionTable/presentation/widget/question_card.dart';
+import 'package:sb_ap_audit_appv2/injection_container.dart' as di;
 
 class RejectedRecordPageArguments {
   final Record record;
@@ -39,14 +37,14 @@ class RejectedRecordPage extends StatelessWidget {
                     children: [
                       Text(
                         'Question No: ${question.questionNo}',
-                        style: TextStyle(
+                        style: const TextStyle(
                             fontSize: 18, fontWeight: FontWeight.bold),
                       ),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       Text('Sub Broker: ${question.subBroker}'),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       Text('Reviewer: ${question.reviewer}'),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       Text('Corporate: ${question.corporate}'),
                     ],
                   ),
@@ -61,12 +59,8 @@ class RejectedRecordPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final questionRepository = QuestionRepositoryImpl();
-    final getQuestion = GetQuestion(questionRepository);
-
     return BlocProvider(
-      create: (context) =>
-          QuestionCubit(getQuestions: getQuestion)..fetchQuestions(),
+      create: (context) => di.sl<QuestionCubit>()..fetchQuestions(),
       child: BlocBuilder<QuestionCubit, QuestionState>(
         builder: (context, state) {
           if (state is QuestionInitial) {
@@ -96,9 +90,9 @@ class RejectedRecordPage extends StatelessWidget {
                 ),
                 Expanded(
                   child: ListView.builder(
-                    itemCount: state.question.length,
+                    itemCount: state.questions.length,
                     itemBuilder: (context, index) {
-                      final question = state.question[index];
+                      final question = state.questions[index];
                       return GestureDetector(
                         onTap: () => _showQuestionDetail(context, question),
                         child: QuestionCard(question: question),

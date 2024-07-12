@@ -1,4 +1,3 @@
-import 'package:dio/dio.dart';
 import '../models/record_model.dart';
 import '../../../../core/network/dio_client.dart';
 

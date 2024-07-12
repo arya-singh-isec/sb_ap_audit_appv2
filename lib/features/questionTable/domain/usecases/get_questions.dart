@@ -3,12 +3,15 @@ import '../entities/question.dart';
 import '../repositories/question_repository.dart';
 
 
-class GetQuestion {
+
+
+class GetQuestions {
   final QuestionRepository repository;
 
-  GetQuestion(this.repository);
+  GetQuestions(this.repository);
 
   Future<List<Question>> call() async {
     return await repository.getQuestions();
   }
 }
+

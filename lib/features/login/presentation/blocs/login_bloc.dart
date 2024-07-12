@@ -41,15 +41,15 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
                 email: 'arya.singh@icicisecurities.com'),
           ),
         );
-        result = await loginUser.execute(credentials);
-        result?.fold(
-          (failure) {
-            emit(LoginError(message: _mapFailureToMessage(failure)));
-            emit(LoginEmpty());
-          },
-          (val) =>
-              emit(val is User ? LoginSuccess(user: val) : LogoutSuccess()),
-        );
+        // result = await loginUser.execute(credentials);
+        // result?.fold(
+        //   (failure) {
+        //     emit(LoginError(message: _mapFailureToMessage(failure)));
+        //     emit(LoginEmpty());
+        //   },
+        //   (val) =>
+        //       emit(val is User ? LoginSuccess(user: val) : LogoutSuccess()),
+        // );
       });
     } else {
       final prevState = state;
