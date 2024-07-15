@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loggy/loggy.dart';
 
@@ -15,18 +16,21 @@ class LoginScreen extends StatefulWidget {
 class _LoginScreenState extends State<LoginScreen> with UiLoggy {
   @override
   Widget build(BuildContext context) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
-        final availableHeight = constraints.maxHeight - keyboardHeight;
+    return SingleChildScrollView(
+      child: Builder(
+        builder: (context) {
+          final keyboardHeight = MediaQuery.of(context).viewInsets.bottom;
+          final screenHeight = MediaQuery.of(context).size.height;
+          final availableHeight = screenHeight - keyboardHeight;
 
-        return SingleChildScrollView(
-          child: Center(
+          return Center(
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
                 children: <Widget>[
-                  SizedBox(
+                  AnimatedContainer(
+                    duration: const Duration(milliseconds: 300),
+                    curve: Curves.ease,
                     height: availableHeight * 0.3,
                     child: Center(
                       child: Image.asset('lib/core/assets/images/app_logo.png'),
@@ -48,9 +52,9 @@ class _LoginScreenState extends State<LoginScreen> with UiLoggy {
                 ],
               ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
     );
   }
 }
