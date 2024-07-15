@@ -93,6 +93,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver, UiLoggy {
         FocusManager.instance.primaryFocus?.unfocus();
       },
       child: Scaffold(
+        resizeToAvoidBottomInset: false,
         drawer: const MyDrawer(),
         appBar: CustomAppBar(initialTitle: appBarTitle),
         body: BlocListener<LoginBloc, LoginState>(
