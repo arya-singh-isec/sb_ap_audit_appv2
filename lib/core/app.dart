@@ -27,6 +27,7 @@ import '../features/selection/presentation/pages/selection_screen.dart';
 import '../features/summary/presentation/pages/record_list.dart';
 import '../navigation_drawer.dart';
 import 'app_bar.dart';
+import 'theme/custom_theme.dart';
 import 'network/network_info.dart';
 import 'utils/utils.dart';
 
@@ -140,10 +141,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver, UiLoggy {
       child: AppBarProvider(
         titleNotifier: appBarTitleNotifier,
         child: MaterialApp(
-          theme: ThemeData(
-            primarySwatch: Colors.blue,
-            visualDensity: VisualDensity.adaptivePlatformDensity,
-          ),
+          theme: appTheme,
           title: 'My App',
           initialRoute: '/login',
           routes: {

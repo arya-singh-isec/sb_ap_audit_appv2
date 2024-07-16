@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import 'core/widgets/custom_text.dart';
 import 'features/login/presentation/blocs/bloc.dart';
 
 class MyDrawer extends StatelessWidget {
@@ -30,12 +31,9 @@ class MyDrawer extends StatelessWidget {
                 ),
                 BlocBuilder<LoginBloc, LoginState>(builder: (context, state) {
                   if (state is LoginSuccess || state is LogoutError) {
-                    return Text(
+                    return CustomText.labelSmall(
                       'Login by ${(state as LoginSuccess).user!.name}',
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                      ),
+                      textColor: TextColor.white,
                     );
                   }
                   return Container();
@@ -45,7 +43,7 @@ class MyDrawer extends StatelessWidget {
           ),
           ListTile(
             leading: const Icon(Icons.edit),
-            title: const Text('New Form'),
+            title: CustomText.labelSmall('New Form'),
             onTap: () {
               Navigator.pop(context);
               Navigator.of(context).pushReplacementNamed('/selection');
@@ -53,7 +51,7 @@ class MyDrawer extends StatelessWidget {
           ),
           ListTile(
             leading: const Icon(Icons.edit),
-            title: const Text('Summary'),
+            title: CustomText.labelSmall('Summary'),
             onTap: () {
               Navigator.pop(context);
               Navigator.of(context).pushReplacementNamed('/summary');
@@ -61,7 +59,7 @@ class MyDrawer extends StatelessWidget {
           ),
           ListTile(
             leading: const Icon(Icons.logout),
-            title: const Text('Log out'),
+            title: CustomText.labelSmall('Log out'),
             onTap: () {
               Navigator.pop(context);
               BlocProvider.of<LoginBloc>(context).add(const Submitted());
