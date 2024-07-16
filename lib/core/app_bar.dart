@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
+import 'widgets/custom_text.dart';
+
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final ValueNotifier<String> titleNotifier;
 
@@ -17,13 +19,9 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             statusBarColor: Color(0xFF800000),
             statusBarIconBrightness: Brightness.light,
           ),
-          title: Text(
+          title: CustomText.titleMedium(
             title,
-            style: const TextStyle(
-              fontSize: 18,
-              fontWeight: FontWeight.w500,
-              letterSpacing: 0.5,
-            ),
+            textColor: TextColor.white,
           ),
           backgroundColor: const Color(0xFFB22222),
           foregroundColor: Colors.white,

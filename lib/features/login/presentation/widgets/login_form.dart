@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loggy/loggy.dart';
 
+import '../../../../core/widgets/custom_text.dart';
 import '../../domain/entities/credentials.dart';
 import '../blocs/bloc.dart';
 
@@ -36,10 +37,7 @@ class _LoginFormState extends State<LoginForm> with UiLoggy {
   Widget build(BuildContext context) {
     return Column(
       children: <Widget>[
-        const Text(
-          'Login',
-          style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-        ),
+        CustomText.titleLarge('Login'),
         const SizedBox(height: 20),
         TextField(
           controller: _usernameController,
@@ -101,14 +99,11 @@ class _LoginFormState extends State<LoginForm> with UiLoggy {
                       Submitted(credentials: credentials),
                     );
                   },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.lightBlue,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(26),
-                    ),
-                    minimumSize: const Size.fromHeight(52),
-                  ),
+                  style: Theme.of(context).filledButtonTheme.style!.merge(
+                        FilledButton.styleFrom(
+                          minimumSize: const Size.fromHeight(52.0),
+                        ),
+                      ),
                   child: state is LoginLoading
                       ? const SizedBox(
                           height: 20,
@@ -118,9 +113,9 @@ class _LoginFormState extends State<LoginForm> with UiLoggy {
                             strokeWidth: 2.0,
                           ),
                         )
-                      : const Text(
+                      : CustomText.labelMedium(
                           'Sign in',
-                          style: TextStyle(fontSize: 16),
+                          textColor: TextColor.white,
                         ),
                 ),
               ),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loggy/loggy.dart';
 
+import '../../../../core/widgets/custom_text.dart';
 import '../../domain/entities/partner.dart';
 import '../../domain/entities/team_member.dart';
 import '../blocs/get_team_members_bloc.dart';
@@ -147,13 +148,8 @@ class _SelectionScreenState extends State<SelectionScreen> with UiLoggy {
                 // AppBarProvider.of(context).titleNotifier.value =
                 //     'How you doin!';
               },
-              style: ElevatedButton.styleFrom(
-                shape:
-                    const RoundedRectangleBorder(borderRadius: _borderRadius),
-                backgroundColor: _amberColor,
-                foregroundColor: Colors.black,
-              ),
-              child: const Text('Submit'),
+              style: Theme.of(context).filledButtonTheme.style,
+              child: CustomText.labelSmall('Submit'),
             ),
           ],
         ),
@@ -171,10 +167,7 @@ class _SelectionScreenState extends State<SelectionScreen> with UiLoggy {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'Please select Partner or Team Member',
-            style: TextStyle(fontWeight: FontWeight.bold),
-          ),
+          CustomText.titleSmall('Please select Partner or Team Member'),
           const SizedBox(height: 8),
           Row(
             children: <Widget>[
@@ -203,10 +196,7 @@ class _SelectionScreenState extends State<SelectionScreen> with UiLoggy {
           Flexible(
             child: GestureDetector(
               onTap: () => _updateSelection('value', value),
-              child: Text(
-                title,
-                style: const TextStyle(fontSize: 14),
-              ),
+              child: CustomText.labelSmall(title),
             ),
           ),
         ],
@@ -231,7 +221,7 @@ class _SelectionScreenState extends State<SelectionScreen> with UiLoggy {
               value: level < _teamMemberSelections.length
                   ? _teamMemberSelections[level]
                   : null,
-              hint: Text(hint),
+              hint: CustomText.bodyMedium(hint),
               decoration: const InputDecoration(
                 border: OutlineInputBorder(),
                 contentPadding:
@@ -242,7 +232,7 @@ class _SelectionScreenState extends State<SelectionScreen> with UiLoggy {
                   .map((item) => DropdownMenuItem(
                         key: ValueKey(item.id),
                         value: item.id,
-                        child: Text(item.name),
+                        child: CustomText.bodyMedium(item.name),
                       ))
                   .toList(),
               onChanged: (value) {
@@ -273,7 +263,7 @@ class _SelectionScreenState extends State<SelectionScreen> with UiLoggy {
         alignedDropdown: true,
         child: DropdownButtonFormField<dynamic>(
           value: _otherSelections[key],
-          hint: Text(hint),
+          hint: CustomText.bodyMedium(hint),
           decoration: const InputDecoration(
             border: OutlineInputBorder(),
             contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
@@ -283,8 +273,8 @@ class _SelectionScreenState extends State<SelectionScreen> with UiLoggy {
               ?.map((item) => DropdownMenuItem(
                     value: item is Partner ? item.id : item,
                     child: item is Partner
-                        ? Text(item.name)
-                        : Text(item as String),
+                        ? CustomText.bodyMedium(item.name)
+                        : CustomText.bodyMedium(item as String),
                   ))
               .toList(),
           onChanged: (value) {
@@ -342,9 +332,8 @@ class _SelectionScreenState extends State<SelectionScreen> with UiLoggy {
               color: _amberColor,
               borderRadius: _borderRadius,
             ),
-            child: const Text(
+            child: CustomText.titleSmall(
               'Sales inspection for year/period:',
-              style: TextStyle(fontWeight: FontWeight.bold),
             ),
           ),
         ),
