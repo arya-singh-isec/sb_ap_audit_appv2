@@ -9,12 +9,6 @@ import '../../domain/entities/question.dart';
 import '../../domain/usecases/get_questions.dart';
 import '../widget/question_card.dart';
 
-class RejectedRecordPageArguments {
-  final Record record;
-
-  RejectedRecordPageArguments({required this.record});
-}
-
 class RejectedRecordPage extends StatelessWidget {
   final Record record;
 

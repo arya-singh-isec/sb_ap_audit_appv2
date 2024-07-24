@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 
-import 'core/widgets/custom_text.dart';
-import 'features/login/presentation/blocs/bloc.dart';
+import '../../features/login/presentation/blocs/bloc.dart';
+import '../navigation/app_routes.dart';
+import 'custom_text.dart';
 
 class MyDrawer extends StatelessWidget {
   const MyDrawer({super.key});
@@ -10,7 +12,7 @@ class MyDrawer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Drawer(
-      width: MediaQuery.of(context).size.width * 0.6,
+      width: MediaQuery.of(context).size.width * 0.7,
       child: ListView(
         padding: EdgeInsets.zero,
         children: [
@@ -30,9 +32,9 @@ class MyDrawer extends StatelessWidget {
                   height: 20,
                 ),
                 BlocBuilder<LoginBloc, LoginState>(builder: (context, state) {
-                  if (state is LoginSuccess || state is LogoutError) {
+                  if (state is LoginSuccess) {
                     return CustomText.labelSmall(
-                      'Login by ${(state as LoginSuccess).user!.name}',
+                      'Login by ${state.user!.name}',
                       textColor: TextColor.white,
                     );
                   }
@@ -45,23 +47,23 @@ class MyDrawer extends StatelessWidget {
             leading: const Icon(Icons.edit),
             title: CustomText.labelSmall('New Form'),
             onTap: () {
-              Navigator.pop(context);
-              Navigator.of(context).pushReplacementNamed('/selection');
+              Navigator.of(context).pop();
+              context.goNamed(AppRoutes.selection);
             },
           ),
           ListTile(
             leading: const Icon(Icons.edit),
             title: CustomText.labelSmall('Summary'),
             onTap: () {
-              Navigator.pop(context);
-              Navigator.of(context).pushReplacementNamed('/summary');
+              Navigator.of(context).pop();
+              context.goNamed(AppRoutes.summary);
             },
           ),
           ListTile(
             leading: const Icon(Icons.logout),
             title: CustomText.labelSmall('Log out'),
             onTap: () {
-              Navigator.pop(context);
+              Navigator.of(context).pop();
               BlocProvider.of<LoginBloc>(context).add(const Submitted());
             },
           ),

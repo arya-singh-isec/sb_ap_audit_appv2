@@ -45,10 +45,12 @@ class _SelectionScreenState extends State<SelectionScreen> with UiLoggy {
     for (var key in ['partner', 'teamMember', 'fiscalYear', 'period']) {
       _focusNodes[key] = FocusNode();
     }
-    // Get Partners List
-    BlocProvider.of<GetPartnersBloc>(context).add(FetchPartnersList());
-    // Get TeamMembers List
-    BlocProvider.of<GetTeamMembersBloc>(context).add(FetchTeamMembersList());
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      // Get Partners List
+      BlocProvider.of<GetPartnersBloc>(context).add(FetchPartnersList());
+      // Get TeamMembers List
+      BlocProvider.of<GetTeamMembersBloc>(context).add(FetchTeamMembersList());
+    });
   }
 
   @override
@@ -97,62 +99,55 @@ class _SelectionScreenState extends State<SelectionScreen> with UiLoggy {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: _unfocusAll,
-      child: Padding(
-        padding: _padding,
-        child: Column(
-          children: [
-            _buildSelectionContainer(),
-            const SizedBox(height: 8),
-            BlocBuilder<GetPartnersBloc, GetPartnersState>(
-              builder: (_, state) => _buildDropdown<Partner>(
-                'partner',
-                state is PartnersLoaded ? state.partners : [],
-                'Select Partner',
-                visible: _selectionType == 'partner',
-              ),
+    return Padding(
+      padding: _padding,
+      child: Column(
+        children: [
+          _buildSelectionContainer(),
+          const SizedBox(height: 8),
+          BlocBuilder<GetPartnersBloc, GetPartnersState>(
+            builder: (_, state) => _buildDropdown<Partner>(
+              'partner',
+              state is PartnersLoaded ? state.partners : [],
+              'Select Partner',
+              visible: _selectionType == 'partner',
             ),
-            BlocBuilder<GetTeamMembersBloc, GetTeamMembersState>(
-              builder: (_, state) => _buildDropdown<TeamMember>(
-                'teamMember_0',
-                state is TeamMembersHierarchyLoaded
-                    ? state.topLevelMembers
-                    : [],
-                'Select Team Member',
-                visible: _selectionType == 'team_member',
-              ),
+          ),
+          BlocBuilder<GetTeamMembersBloc, GetTeamMembersState>(
+            builder: (_, state) => _buildDropdown<TeamMember>(
+              'teamMember_0',
+              state is TeamMembersHierarchyLoaded ? state.topLevelMembers : [],
+              'Select Team Member',
+              visible: _selectionType == 'team_member',
             ),
-            BlocBuilder<GetTeamMembersBloc, GetTeamMembersState>(
-              builder: (_, state) {
-                if (state is TeamMembersHierarchyLoaded) {
-                  return Column(
-                    children: [
-                      ..._buildSubordinateDropdowns(state.subordinates),
-                    ],
-                  );
-                }
-                return Container();
-              },
-            ),
-            _buildSalesInspectionSection(),
-            const SizedBox(height: 8),
-            _buildDropdown<String>(
-                'fiscalYear', _fiscalYears, 'Select Fiscal Year'),
-            const SizedBox(height: 8),
-            _buildDropdown<String>('period', _periods, 'Select Period'),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                loggy.debug('Submit button pressed');
-                // AppBarProvider.of(context).titleNotifier.value =
-                //     'How you doin!';
-              },
-              style: Theme.of(context).filledButtonTheme.style,
-              child: CustomText.labelSmall('Submit'),
-            ),
-          ],
-        ),
+          ),
+          BlocBuilder<GetTeamMembersBloc, GetTeamMembersState>(
+            builder: (_, state) {
+              if (state is TeamMembersHierarchyLoaded) {
+                return Column(
+                  children: [
+                    ..._buildSubordinateDropdowns(state.subordinates),
+                  ],
+                );
+              }
+              return Container();
+            },
+          ),
+          _buildSalesInspectionSection(),
+          const SizedBox(height: 8),
+          _buildDropdown<String>(
+              'fiscalYear', _fiscalYears, 'Select Fiscal Year'),
+          const SizedBox(height: 8),
+          _buildDropdown<String>('period', _periods, 'Select Period'),
+          const SizedBox(height: 20),
+          ElevatedButton(
+            onPressed: () {
+              loggy.debug('Submit button pressed');
+            },
+            style: Theme.of(context).filledButtonTheme.style,
+            child: CustomText.labelSmall('Submit'),
+          ),
+        ],
       ),
     );
   }

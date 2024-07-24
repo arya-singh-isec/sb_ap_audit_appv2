@@ -10,8 +10,6 @@ import '../features/login/domain/repositories/user_repository.dart';
 import '../features/login/domain/usecases/login_user.dart';
 import '../features/login/domain/usecases/logout_user.dart';
 import '../features/login/presentation/blocs/bloc.dart';
-import '../features/login/presentation/pages/login_screen.dart';
-import '../features/questionTable/presentation/pages/rejected_record_page.dart';
 import '../features/selection/data/datasources/partners_remote_data_source.dart';
 import '../features/selection/data/datasources/team_members_remote_data_source.dart';
 import '../features/selection/data/repositories/partners_repository_impl.dart';
@@ -23,12 +21,9 @@ import '../features/selection/domain/usecases/get_subordinates.dart';
 import '../features/selection/domain/usecases/get_team_members.dart';
 import '../features/selection/presentation/blocs/get_partners_bloc.dart';
 import '../features/selection/presentation/blocs/get_team_members_bloc.dart';
-import '../features/selection/presentation/pages/selection_screen.dart';
-import '../features/summary/presentation/pages/record_list.dart';
-import '../navigation_drawer.dart';
-import 'app_bar.dart';
-import 'theme/custom_theme.dart';
+import 'navigation/app_router.dart';
 import 'network/network_info.dart';
+import 'theme/custom_theme.dart';
 import 'utils/utils.dart';
 
 void main() {
@@ -70,15 +65,34 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> with WidgetsBindingObserver, UiLoggy {
   final ValueNotifier<String> appBarTitleNotifier = ValueNotifier('root');
 
+  // Bloc instances
+  late final LoginBloc _loginBloc;
+  late final GetPartnersBloc _getPartnersBloc;
+  late final GetTeamMembersBloc _getTeamMembersBloc;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
+    _loginBloc = LoginBloc(
+      loginUser: LoginUser(widget.userRepository),
+      logoutUser: LogoutUser(widget.userRepository),
+      inputValidator: InputValidator(),
+    );
+    _getPartnersBloc = GetPartnersBloc(
+      getPartners: GetPartners(repository: widget.partnersRepository),
+    );
+    _getTeamMembersBloc = GetTeamMembersBloc(
+      getTeamMembers: GetTeamMembers(repository: widget.teamMembersRepository),
+      getSubordinates:
+          GetSubordinates(repository: widget.teamMembersRepository),
+    );
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    appBarTitleNotifier.dispose();
     super.dispose();
   }
 
@@ -87,83 +101,18 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver, UiLoggy {
     loggy.debug('AppLifecycle state changed to ${state.name}');
   }
 
-  Widget _wrapWithScaffold(
-      BuildContext context, Widget child, String appBarTitle) {
-    return GestureDetector(
-      onTap: () {
-        FocusManager.instance.primaryFocus?.unfocus();
-      },
-      child: Scaffold(
-        resizeToAvoidBottomInset: false,
-        drawer: const MyDrawer(),
-        appBar: CustomAppBar(initialTitle: appBarTitle),
-        body: BlocListener<LoginBloc, LoginState>(
-          listener: (context, state) {
-            if (state is LogoutError) {
-              showSnackbar(context, state.message);
-            } else if (state is LoginError) {
-              showSnackbar(context, state.message);
-            } else if (state is LogoutSuccess) {
-              Navigator.of(context).pushReplacementNamed('/login');
-            }
-          },
-          child: child,
-        ),
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider<LoginBloc>(
-          create: (context) => LoginBloc(
-            loginUser: LoginUser(widget.userRepository),
-            logoutUser: LogoutUser(widget.userRepository),
-            inputValidator: InputValidator(),
-          ),
-        ),
-        BlocProvider<GetPartnersBloc>(
-          create: (context) => GetPartnersBloc(
-            getPartners: GetPartners(repository: widget.partnersRepository),
-          ),
-        ),
-        BlocProvider<GetTeamMembersBloc>(
-          create: (_) => GetTeamMembersBloc(
-            getTeamMembers:
-                GetTeamMembers(repository: widget.teamMembersRepository),
-            getSubordinates:
-                GetSubordinates(repository: widget.teamMembersRepository),
-          ),
-        )
+        BlocProvider.value(value: _loginBloc),
+        BlocProvider.value(value: _getPartnersBloc),
+        BlocProvider.value(value: _getTeamMembersBloc),
       ],
-      child: AppBarProvider(
-        titleNotifier: appBarTitleNotifier,
-        child: MaterialApp(
-          theme: appTheme,
-          title: 'My App',
-          initialRoute: '/login',
-          routes: {
-            '/login': (_) => _wrapWithScaffold(_, const LoginScreen(), ''),
-            '/selection': (_) => _wrapWithScaffold(
-                _, const SelectionScreen(), 'Partner Selection'),
-            '/summary': (_) =>
-                _wrapWithScaffold(_, const RecordListPage(), 'Summary'),
-          },
-          onGenerateRoute: (RouteSettings settings) {
-            if (settings.name == '/rejectedRecord') {
-              final args = settings.arguments as RejectedRecordPageArguments;
-              return MaterialPageRoute(builder: (context) {
-                return _wrapWithScaffold(
-                    context,
-                    RejectedRecordPage(record: args.record),
-                    '${args.record.name} Details');
-              });
-            }
-            return null;
-          },
-        ),
+      child: MaterialApp.router(
+        title: 'ICICIDirect',
+        theme: appTheme,
+        routerConfig: appRouter,
       ),
     );
   }

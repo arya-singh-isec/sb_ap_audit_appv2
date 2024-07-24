@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:go_router/go_router.dart';
 import 'package:loggy/loggy.dart';
 
+import '../../../../core/navigation/app_routes.dart';
 import '../blocs/bloc.dart';
 import '../widgets/login_form.dart';
 
@@ -39,12 +40,12 @@ class _LoginScreenState extends State<LoginScreen> with UiLoggy {
                   const SizedBox(height: 10),
                   BlocListener<LoginBloc, LoginState>(
                     bloc: context.read<LoginBloc>(),
+                    listenWhen: (prevState, state) => prevState is! LogoutError,
                     listener: (context, state) {
                       if (state is LoginSuccess) {
                         loggy.debug(
                             'Navigated successfully out of login screen');
-                        Navigator.of(context)
-                            .pushReplacementNamed('/selection');
+                        context.goNamed(AppRoutes.selection);
                       }
                     },
                     child: const LoginForm(),
