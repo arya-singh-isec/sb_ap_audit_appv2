@@ -38,6 +38,7 @@ dependencies:
   internet_connection_checker:
   loggy: ^2.0.3
   flutter_loggy: ^2.0.3
+  go_router:
 
 
   # The following adds the Cupertino Icons font to your application.

@@ -34,24 +34,24 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> with BlocLoggy {
         emit(LoginEmpty());
       }, (credentials) async {
         emit(LoginLoading());
-        // await Future.delayed(const Duration(seconds: 3));
-        // emit(
-        //   LoginSuccess(
-        //     user: const User(
-        //         id: '1',
-        //         name: 'Arya Singh',
-        //         email: 'arya.singh@icicisecurities.com'),
-        //   ),
-        // );
-        result = await loginUser.execute(credentials);
-        result?.fold(
-          (failure) {
-            emit(LoginError(message: _mapFailureToMessage(failure)));
-            emit(LoginEmpty());
-          },
-          (val) =>
-              emit(val is User ? LoginSuccess(user: val) : LogoutSuccess()),
+        await Future.delayed(const Duration(seconds: 3));
+        emit(
+          LoginSuccess(
+            user: const User(
+                id: '1',
+                name: 'Robert Downey Junior',
+                email: 'arya.singh@icicisecurities.com'),
+          ),
         );
+        // result = await loginUser.execute(credentials);
+        // result?.fold(
+        //   (failure) {
+        //     emit(LoginError(message: _mapFailureToMessage(failure)));
+        //     emit(LoginEmpty());
+        //   },
+        //   (val) =>
+        //       emit(val is User ? LoginSuccess(user: val) : LogoutSuccess()),
+        // );
       });
     } else {
       final prevState = state;
