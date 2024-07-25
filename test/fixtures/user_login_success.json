@@ -1,8 +1,9 @@
 {
-    "success": true,
-    "data": {
-        "id": "1",
-        "name": "Arya Singh",
-        "email": "arya.singh@icicisecurities.com"
-    }
+    "Status": 200,
+    "Success": {
+        "Id": "739333",
+        "LoginFlag": "Y",
+        "SessionToken": "<Session-Token>"
+    },
+    "Error": null
 }

@@ -6,8 +6,8 @@ import '../../features/questionTable/presentation/pages/rejected_record_page.dar
 import '../../features/selection/presentation/pages/selection_screen.dart';
 import '../../features/summary/domain/entities/record.dart';
 import '../../features/summary/presentation/pages/record_list.dart';
+import '../config/constants.dart';
 import '../widgets/base_screen.dart';
-import 'app_routes.dart';
 
 final _rootNavigatorKey = GlobalKey<NavigatorState>();
 final _shellNavigatorKey = GlobalKey<NavigatorState>();

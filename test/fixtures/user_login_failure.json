@@ -1,7 +1,5 @@
 {
-    "success": false,
-    "error": {
-        "code": 401,
-        "message": "Invalid username and/or password."
-    }
+    "Status": 500,
+    "Success": null,
+    "Error": "Invalid Input Data"
 }

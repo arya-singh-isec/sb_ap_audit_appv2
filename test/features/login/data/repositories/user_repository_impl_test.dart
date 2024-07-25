@@ -32,7 +32,10 @@ void main() {
     const tCredentials = Credentials(username: '739333', password: 'test1234');
 
     const UserModel tUserModel = UserModel(
-        id: '1', name: 'Arya Singh', email: 'arya.singh@icicisecurities.com');
+      id: '739333',
+      isLoggedIn: true,
+      sessionToken: '<Session-Token>',
+    );
     const User tUser = tUserModel;
 
     test('should check if the device is online', () async {

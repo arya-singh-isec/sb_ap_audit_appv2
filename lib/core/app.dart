@@ -21,9 +21,9 @@ import '../features/selection/domain/usecases/get_subordinates.dart';
 import '../features/selection/domain/usecases/get_team_members.dart';
 import '../features/selection/presentation/blocs/get_partners_bloc.dart';
 import '../features/selection/presentation/blocs/get_team_members_bloc.dart';
+import 'config/theme.dart';
 import 'navigation/app_router.dart';
 import 'network/network_info.dart';
-import 'theme/custom_theme.dart';
 import 'utils/utils.dart';
 
 void main() {

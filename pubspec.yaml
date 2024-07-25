@@ -39,6 +39,9 @@ dependencies:
   loggy: ^2.0.3
   flutter_loggy: ^2.0.3
   go_router:
+  encrypt: ^5.0.3
+  crypto: ^3.0.3
+  intl: ^0.19.0
 
 
   # The following adds the Cupertino Icons font to your application.

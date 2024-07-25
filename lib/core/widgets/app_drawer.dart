@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/login/presentation/blocs/bloc.dart';
-import '../navigation/app_routes.dart';
+import '../config/constants.dart';
 import 'custom_text.dart';
 
 class MyDrawer extends StatelessWidget {
@@ -34,7 +34,7 @@ class MyDrawer extends StatelessWidget {
                 BlocBuilder<LoginBloc, LoginState>(builder: (context, state) {
                   if (state is LoginSuccess) {
                     return CustomText.labelSmall(
-                      'Login by ${state.user!.name}',
+                      'Login by ${(state as LoginSuccess).user!.id}',
                       textColor: TextColor.white,
                     );
                   }

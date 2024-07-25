@@ -8,7 +8,10 @@ import '../../../../fixtures/fixture_reader.dart';
 
 void main() {
   const UserModel tUserModel = UserModel(
-      id: '1', name: 'Arya Singh', email: 'arya.singh@icicisecurities.com');
+    id: '739333',
+    isLoggedIn: true,
+    sessionToken: '<Session-Token>',
+  );
 
   test('model should be a subclass of User entity', () {
     // Assert
@@ -45,9 +48,9 @@ void main() {
       final result = tUserModel.toJson();
       // Assert
       expect(result, {
-        'id': '1',
-        'name': 'Arya Singh',
-        'email': 'arya.singh@icicisecurities.com'
+        'id': '739333',
+        'isLoggedIn': true,
+        'sessionToken': '<Session-Token>'
       });
     });
   });

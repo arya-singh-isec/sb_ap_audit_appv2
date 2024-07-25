@@ -54,8 +54,8 @@ void main() {
   });
 
   group('login', () {
-    const tUser = User(
-        id: '1', name: 'Arya Singh', email: 'arya.singh@icicisecurities.com');
+    const tUser =
+        User(id: '739333', isLoggedIn: true, sessionToken: '<Session-Token>');
 
     test('should emit [LoginLoading, LoginSuccess] when login is successful',
         () async {
