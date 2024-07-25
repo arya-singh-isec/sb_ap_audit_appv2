@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../features/login/presentation/blocs/bloc.dart';
-import '../navigation/app_routes.dart';
+import '../config/constants.dart';
 import '../utils/common_utils.dart';
 import 'app_bar.dart';
 import 'app_drawer.dart';

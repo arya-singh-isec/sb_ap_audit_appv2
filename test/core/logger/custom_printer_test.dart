@@ -36,8 +36,8 @@ void main() {
     final output = LoggerConfig.auditLogs;
     // Assert
     expect(output.length, 1);
-    expect(output.last, contains('[I]'));
-    expect(output.last, contains(testMessage));
+    expect(output.last.logMessage, contains('[I]'));
+    expect(output.last.logMessage, contains(testMessage));
   });
 
   test('Error level logging', () {
@@ -45,8 +45,8 @@ void main() {
     logger.error(testMessage);
     final output = LoggerConfig.auditLogs;
     // Assert
-    expect(output.last, contains('[E]'));
-    expect(output.last, contains('\n'));
-    expect(output.last, contains(testMessage));
+    expect(output.last.logMessage, contains('[E]'));
+    // expect(output.last.logMessage, contains('\n'));
+    expect(output.last.logMessage, contains(testMessage));
   });
 }

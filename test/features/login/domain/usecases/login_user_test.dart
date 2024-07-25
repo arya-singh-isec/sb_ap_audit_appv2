@@ -24,9 +24,10 @@ void main() {
       Credentials(username: tUsername, password: tPassword);
 
   const User tUser = User(
-      id: '739333',
-      name: 'Arya Singh',
-      email: 'arya.singh@icicisecurities.com');
+    id: '739333',
+    isLoggedIn: true,
+    sessionToken: '<Session-Token>',
+  );
 
   test('should verify successful login', () async {
     // Arrange

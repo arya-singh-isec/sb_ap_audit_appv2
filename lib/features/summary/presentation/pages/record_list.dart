@@ -2,7 +2,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
-import 'package:sb_ap_audit_appv2/core/navigation/app_routes.dart';
+import 'package:sb_ap_audit_appv2/core/config/constants.dart';
 
 import '../../data/repository/record_repository_impl.dart';
 import '../../domain/usecases/get_record_data.dart';
