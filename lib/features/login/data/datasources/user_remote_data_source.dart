@@ -1,14 +1,12 @@
 import 'dart:convert';
-
-import 'package:http/http.dart' as http;
-
+import 'package:dio/dio.dart';
 import '../../../../core/config/constants.dart';
 import '../../../../core/error/exceptions.dart';
 import '../../../../core/utils/common_utils.dart';
 import '../../domain/entities/credentials.dart';
 import '../models/user_model.dart';
+import '../../../../core/network/dio_client.dart';
 
-// Designed in a way similar to the repository
 abstract class UserRemoteDataSource {
   /// Throws a [ServerException] for all error codes.
   Future<UserModel?>? login(Credentials? credentials);
@@ -18,14 +16,12 @@ abstract class UserRemoteDataSource {
 }
 
 class UserRemoteDataSourceImpl implements UserRemoteDataSource {
-  final http.Client client;
+  final DioClient dioClient;
 
-  UserRemoteDataSourceImpl({required this.client});
+  UserRemoteDataSourceImpl({required this.dioClient});
 
   @override
   Future<UserModel?>? login(Credentials? credentials) async {
-    final Uri url = Uri.parse(ApiConstants.login);
-    final headers = {'Content-Type': 'application/json; charset=UTF-8'};
     try {
       final encryptedPass = credentials!.password.split(':');
       final postData = json.encode({
@@ -42,9 +38,8 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
         'Checksum': generateChecksum(postData.toString(), currentTimestamp)
       };
 
-      final response = await client.post(url,
-          headers: headers, body: json.encode(requestBody));
-      final responseBody = json.decode(response.body);
+      final response = await dioClient.post(ApiConstants.login, data: requestBody);
+      final responseBody = response.data;
       if (responseBody['Status'] == 200) {
         responseBody['Success']['Id'] = credentials.username;
         return UserModel.fromJson(responseBody);
@@ -52,9 +47,11 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
         throw ServerException(
             code: responseBody['Status'], message: responseBody['Error']);
       }
-    } on Exception catch (e) {
-      if (e is ServerException) {
-        throw ServerException(code: e.code, message: e.message);
+    } on DioException catch (e) {
+      if (e.response != null) {
+        throw ServerException(
+            code: e.response!.statusCode!,
+            message: e.response!.data['Error']);
       } else {
         throw ServerException(
             code: 500, message: 'Server error. Please try again later!');
@@ -64,19 +61,23 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
 
   @override
   Future<bool?>? logout() async {
-    final Uri url = Uri.parse('https://test.example.com/logout');
     try {
-      final response =
-          await client.get(url, headers: {'Content-Type': 'application/json'});
+      final response = await dioClient.get('https://test.example.com/logout');
       if (response.statusCode == 200) {
-        return Future.value(json.decode(response.body)['success']);
+        return Future.value(response.data['success']);
       } else {
-        final body = json.decode(response.body);
+        final body = response.data;
         throw ServerException(code: body['Status'], message: body['Error']);
       }
-    } on Exception {
-      throw ServerException(
-          code: 500, message: 'Server error. Please try again later.');
+    } on DioException catch (e) {
+      if (e.response != null) {
+        throw ServerException(
+            code: e.response!.statusCode!,
+            message: e.response!.data['Error']);
+      } else {
+        throw ServerException(
+            code: 500, message: 'Server error. Please try again later!');
+      }
     }
   }
 }

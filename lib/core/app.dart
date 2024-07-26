@@ -25,12 +25,16 @@ import 'config/theme.dart';
 import 'navigation/app_router.dart';
 import 'network/network_info.dart';
 import 'utils/utils.dart';
+import 'package:dio/dio.dart';
+import '../core/network/dio_client.dart';
 
 void main() {
   runApp(MyApp());
 }
 
 class MyApp extends StatefulWidget {
+    late final Dio dio;
+  late final DioClient dioClient;
   late final http.Client client;
   late final UserRemoteDataSource userRemoteDataSource;
   late final UserRepository userRepository;
@@ -43,9 +47,11 @@ class MyApp extends StatefulWidget {
 
   MyApp({super.key}) {
     client = http.Client();
+    dio = Dio();
+    dioClient = DioClient(dio);
     connectionChecker = InternetConnectionChecker();
     networkInfo = NetworkInfoImpl(connectionChecker);
-    userRemoteDataSource = UserRemoteDataSourceImpl(client: client);
+    userRemoteDataSource = UserRemoteDataSourceImpl(dioClient: dioClient);
     userRepository = UserRepositoryImpl(
         remoteDataSource: userRemoteDataSource, networkInfo: networkInfo);
     partnersRemoteDataSource = PartnersRemoteDataSourceImpl(client: client);
