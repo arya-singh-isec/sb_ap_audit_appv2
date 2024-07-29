@@ -1,9 +1,6 @@
-import 'dart:convert';
-
-import 'package:sb_ap_audit_appv2/core/error/exceptions.dart';
-
+import '../../../../core/error/exceptions.dart';
+import '../../../../core/network/dio_client.dart';
 import '../models/partner_model.dart';
-import 'package:http/http.dart' as http;
 
 abstract class PartnersRemoteDataSource {
   /// Throws a [ServerException] for all error codes.
@@ -11,23 +8,22 @@ abstract class PartnersRemoteDataSource {
 }
 
 class PartnersRemoteDataSourceImpl extends PartnersRemoteDataSource {
-  final http.Client client;
+  final DioClient client;
 
   PartnersRemoteDataSourceImpl({required this.client});
 
   @override
   Future<List<PartnerModel>?>? getPartners() async {
-    final Uri url = Uri.parse('https://test.example.com/getPartners');
+    const String url = 'https://test.example.com/getPartners';
     try {
-      final response =
-          await client.get(url, headers: {'Content-Type': 'application/json'});
+      final response = await client.get(url);
       if (response.statusCode == 200) {
-        final List<dynamic> jsonData = json.decode(response.body)['data'];
+        final List<dynamic> jsonData = response.data['data'];
         final List<PartnerModel> models =
             jsonData.map((jsonMap) => PartnerModel.fromJson(jsonMap)).toList();
         return models;
       } else {
-        final body = json.decode(response.body);
+        final body = response.data;
         throw ServerException(
             code: body['error']['code'], message: body['error']['message']);
       }
