@@ -1,45 +1,46 @@
-import 'dart:convert';
+// import 'dart:convert';
 
+import 'package:dio/dio.dart';
 import 'package:mockito/mockito.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:http/http.dart' as http;
-import 'package:sb_ap_audit_appv2/core/config/constants.dart';
-import 'package:sb_ap_audit_appv2/core/error/exceptions.dart';
+// import 'package:sb_ap_audit_appv2/core/config/constants.dart';
+// import 'package:sb_ap_audit_appv2/core/error/exceptions.dart';
+import 'package:sb_ap_audit_appv2/core/network/dio_client.dart';
 import 'package:sb_ap_audit_appv2/features/login/data/datasources/user_remote_data_source.dart';
-import 'package:sb_ap_audit_appv2/features/login/data/models/user_model.dart';
-import 'package:sb_ap_audit_appv2/features/login/domain/entities/credentials.dart';
+// import 'package:sb_ap_audit_appv2/features/login/data/models/user_model.dart';
+// import 'package:sb_ap_audit_appv2/features/login/domain/entities/credentials.dart';
 
-import '../../../../fixtures/fixture_reader.dart';
+// import '../../../../fixtures/fixture_reader.dart';
 
-class MockHttpClient extends Mock implements http.Client {
+class MockDioClient extends Mock implements DioClient {
   @override
-  Future<http.Response> get(Uri url, {Map<String, String>? headers}) =>
+  Future<Response> get(String url, {Map<String, dynamic>? queryParameters}) =>
       super.noSuchMethod(
         Invocation.getter(#get),
-        returnValue: Future.value(http.Response('{}', 200)),
-        returnValueForMissingStub: Future.value(http.Response('{}', 200)),
+        returnValue: Future.value(Response(
+            data: {}, requestOptions: RequestOptions(), statusCode: 200)),
+        returnValueForMissingStub: Future.value(Response(
+            data: {}, requestOptions: RequestOptions(), statusCode: 200)),
       );
 
   @override
-  Future<http.Response> post(Uri url,
-          {Map<String, String>? headers, Object? body, Encoding? encoding}) =>
-      super.noSuchMethod(
+  Future<Response> post(String url, {dynamic data}) => super.noSuchMethod(
         Invocation.getter(#post),
-        returnValue: Future.value(http.Response('{}', 200)),
-        returnValueForMissingStub: Future.value(http.Response('{}', 200)),
+        returnValue: Future.value(Response(
+            data: {}, requestOptions: RequestOptions(), statusCode: 200)),
+        returnValueForMissingStub: Future.value(Response(
+            data: {}, requestOptions: RequestOptions(), statusCode: 200)),
       );
 }
 
 void main() {
-  late MockHttpClient mockHttpClient;
+  late MockDioClient mockDioClient;
   late UserRemoteDataSourceImpl remoteDataSourceImpl;
 
   setUp(() {
-    mockHttpClient = MockHttpClient();
-    remoteDataSourceImpl = UserRemoteDataSourceImpl(client: mockHttpClient);
+    mockDioClient = MockDioClient();
+    remoteDataSourceImpl = UserRemoteDataSourceImpl(client: mockDioClient);
   });
-
-  const headers = {'Content-Type': 'application/json; charset=UTF-8'};
 
   // group('login', () {
   //   final Uri url = Uri.parse(ApiConstants.login);

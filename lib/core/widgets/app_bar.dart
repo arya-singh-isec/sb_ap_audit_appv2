@@ -5,8 +5,10 @@ import 'custom_text.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final ValueNotifier<String> titleNotifier;
+  final Function() openDrawer;
 
-  const CustomAppBar({super.key, required this.titleNotifier});
+  const CustomAppBar(
+      {super.key, required this.titleNotifier, required this.openDrawer});
 
   @override
   Widget build(BuildContext context) {
@@ -14,6 +16,10 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       systemOverlayStyle: const SystemUiOverlayStyle(
         statusBarColor: Color(0xFF800000),
         statusBarIconBrightness: Brightness.light,
+      ),
+      leading: IconButton(
+        onPressed: openDrawer,
+        icon: const Icon(Icons.menu),
       ),
       title: ValueListenableBuilder(
         valueListenable: titleNotifier,

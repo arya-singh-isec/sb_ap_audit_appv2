@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:sb_ap_audit_appv2/core/widgets/app_drawer.dart';
 
 import '../../features/login/presentation/pages/login_screen.dart';
 import '../../features/questionTable/presentation/pages/rejected_record_page.dart';
@@ -20,9 +21,12 @@ final GoRouter appRouter = GoRouter(
     GoRoute(
       name: AppRoutes.login,
       path: '/login',
-      builder: (context, state) => BaseScreen(
-        titleNotifier: _titleNotifier,
-        child: const LoginScreen(),
+      builder: (context, state) => AppDrawerProvider(
+        controller: AppDrawerController(),
+        child: BaseScreen(
+          titleNotifier: _titleNotifier,
+          child: const LoginScreen(),
+        ),
       ),
     ),
     ShellRoute(
@@ -36,9 +40,12 @@ final GoRouter appRouter = GoRouter(
           _titleNotifier.value = '${(state.extra as Record).name} Details';
         }
         return NoTransitionPage(
-          child: BaseScreen(
-            titleNotifier: _titleNotifier,
-            child: child,
+          child: AppDrawerProvider(
+            controller: AppDrawerController(),
+            child: BaseScreen(
+              titleNotifier: _titleNotifier,
+              child: child,
+            ),
           ),
         );
       },

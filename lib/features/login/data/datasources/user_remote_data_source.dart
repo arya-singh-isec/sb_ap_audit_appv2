@@ -16,9 +16,9 @@ abstract class UserRemoteDataSource {
 }
 
 class UserRemoteDataSourceImpl implements UserRemoteDataSource {
-  final DioClient dioClient;
+  final DioClient client;
 
-  UserRemoteDataSourceImpl({required this.dioClient});
+  UserRemoteDataSourceImpl({required this.client});
 
   @override
   Future<UserModel?>? login(Credentials? credentials) async {
@@ -38,7 +38,7 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
         'Checksum': generateChecksum(postData.toString(), currentTimestamp)
       };
 
-      final response = await dioClient.post(ApiConstants.login, data: requestBody);
+      final response = await client.post(ApiConstants.login, data: requestBody);
       final responseBody = response.data;
       if (responseBody['Status'] == 200) {
         responseBody['Success']['Id'] = credentials.username;
@@ -50,8 +50,7 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
     } on DioException catch (e) {
       if (e.response != null) {
         throw ServerException(
-            code: e.response!.statusCode!,
-            message: e.response!.data['Error']);
+            code: e.response!.statusCode!, message: e.response!.data['Error']);
       } else {
         throw ServerException(
             code: 500, message: 'Server error. Please try again later!');
@@ -62,7 +61,7 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
   @override
   Future<bool?>? logout() async {
     try {
-      final response = await dioClient.get('https://test.example.com/logout');
+      final response = await client.get('https://test.example.com/logout');
       if (response.statusCode == 200) {
         return Future.value(response.data['success']);
       } else {
@@ -72,8 +71,7 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
     } on DioException catch (e) {
       if (e.response != null) {
         throw ServerException(
-            code: e.response!.statusCode!,
-            message: e.response!.data['Error']);
+            code: e.response!.statusCode!, message: e.response!.data['Error']);
       } else {
         throw ServerException(
             code: 500, message: 'Server error. Please try again later!');

@@ -1,9 +1,10 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:http/http.dart' as http;
 import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:loggy/loggy.dart';
 
+import '../core/network/dio_client.dart';
 import '../features/login/data/datasources/user_remote_data_source.dart';
 import '../features/login/data/repositories/user_repository_impl.dart';
 import '../features/login/domain/repositories/user_repository.dart';
@@ -25,17 +26,13 @@ import 'config/theme.dart';
 import 'navigation/app_router.dart';
 import 'network/network_info.dart';
 import 'utils/utils.dart';
-import 'package:dio/dio.dart';
-import '../core/network/dio_client.dart';
 
 void main() {
   runApp(MyApp());
 }
 
 class MyApp extends StatefulWidget {
-    late final Dio dio;
-  late final DioClient dioClient;
-  late final http.Client client;
+  late final DioClient client;
   late final UserRemoteDataSource userRemoteDataSource;
   late final UserRepository userRepository;
   late final PartnersRemoteDataSource partnersRemoteDataSource;
@@ -46,12 +43,10 @@ class MyApp extends StatefulWidget {
   late final InternetConnectionChecker connectionChecker;
 
   MyApp({super.key}) {
-    client = http.Client();
-    dio = Dio();
-    dioClient = DioClient(dio);
+    client = DioClient(Dio());
     connectionChecker = InternetConnectionChecker();
     networkInfo = NetworkInfoImpl(connectionChecker);
-    userRemoteDataSource = UserRemoteDataSourceImpl(dioClient: dioClient);
+    userRemoteDataSource = UserRemoteDataSourceImpl(client: client);
     userRepository = UserRepositoryImpl(
         remoteDataSource: userRemoteDataSource, networkInfo: networkInfo);
     partnersRemoteDataSource = PartnersRemoteDataSourceImpl(client: client);
