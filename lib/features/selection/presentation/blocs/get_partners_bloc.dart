@@ -17,12 +17,6 @@ class GetPartnersBloc extends Bloc<GetPartnersEvent, GetPartnersState>
   Future<void> _fetchPartnersList(
       FetchPartnersList event, Emitter<GetPartnersState> emit) async {
     emit(PartnersLoading());
-    // final List<Partner> dummyListOfPartners = [
-    //   const Partner(id: '1', name: 'RAMU 08977'),
-    //   const Partner(id: '2', name: 'BHAU 16492'),
-    //   const Partner(id: '3', name: 'SHAI 15637')
-    // ];
-    // emit(PartnersLoaded(partners: dummyListOfPartners));
     final result = await getPartners.execute();
     result?.fold(
       (failure) {

@@ -49,7 +49,7 @@ class _SelectionScreenState extends State<SelectionScreen> with UiLoggy {
       // Get Partners List
       BlocProvider.of<GetPartnersBloc>(context).add(FetchPartnersList());
       // Get TeamMembers List
-      BlocProvider.of<GetTeamMembersBloc>(context).add(FetchTeamMembersList());
+      // BlocProvider.of<GetTeamMembersBloc>(context).add(FetchTeamMembersList());
     });
   }
 
@@ -262,6 +262,7 @@ class _SelectionScreenState extends State<SelectionScreen> with UiLoggy {
       child: ButtonTheme(
         alignedDropdown: true,
         child: DropdownButtonFormField<dynamic>(
+          isExpanded: true,
           value: _otherSelections[key],
           hint: CustomText.bodyMedium(hint),
           decoration: const InputDecoration(
