@@ -99,55 +99,61 @@ class _SelectionScreenState extends State<SelectionScreen> with UiLoggy {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: _padding,
-      child: Column(
-        children: [
-          _buildSelectionContainer(),
-          const SizedBox(height: 8),
-          BlocBuilder<GetPartnersBloc, GetPartnersState>(
-            builder: (_, state) => _buildDropdown<Partner>(
-              'partner',
-              state is PartnersLoaded ? state.partners : [],
-              'Select Partner',
-              visible: _selectionType == 'partner',
+    return GestureDetector(
+      onTap: _unfocusAll,
+      behavior: HitTestBehavior.opaque,
+      child: Padding(
+        padding: _padding,
+        child: Column(
+          children: [
+            _buildSelectionContainer(),
+            const SizedBox(height: 8),
+            BlocBuilder<GetPartnersBloc, GetPartnersState>(
+              builder: (_, state) => _buildDropdown<Partner>(
+                'partner',
+                state is PartnersLoaded ? state.partners : [],
+                'Select Partner',
+                visible: _selectionType == 'partner',
+              ),
             ),
-          ),
-          BlocBuilder<GetTeamMembersBloc, GetTeamMembersState>(
-            builder: (_, state) => _buildDropdown<TeamMember>(
-              'teamMember_0',
-              state is TeamMembersHierarchyLoaded ? state.topLevelMembers : [],
-              'Select Team Member',
-              visible: _selectionType == 'team_member',
+            BlocBuilder<GetTeamMembersBloc, GetTeamMembersState>(
+              builder: (_, state) => _buildDropdown<TeamMember>(
+                'teamMember_0',
+                state is TeamMembersHierarchyLoaded
+                    ? state.topLevelMembers
+                    : [],
+                'Select Team Member',
+                visible: _selectionType == 'team_member',
+              ),
             ),
-          ),
-          BlocBuilder<GetTeamMembersBloc, GetTeamMembersState>(
-            builder: (_, state) {
-              if (state is TeamMembersHierarchyLoaded) {
-                return Column(
-                  children: [
-                    ..._buildSubordinateDropdowns(state.subordinates),
-                  ],
-                );
-              }
-              return Container();
-            },
-          ),
-          _buildSalesInspectionSection(),
-          const SizedBox(height: 8),
-          _buildDropdown<String>(
-              'fiscalYear', _fiscalYears, 'Select Fiscal Year'),
-          const SizedBox(height: 8),
-          _buildDropdown<String>('period', _periods, 'Select Period'),
-          const SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: () {
-              loggy.debug('Submit button pressed');
-            },
-            style: Theme.of(context).filledButtonTheme.style,
-            child: CustomText.labelSmall('Submit'),
-          ),
-        ],
+            BlocBuilder<GetTeamMembersBloc, GetTeamMembersState>(
+              builder: (_, state) {
+                if (state is TeamMembersHierarchyLoaded) {
+                  return Column(
+                    children: [
+                      ..._buildSubordinateDropdowns(state.subordinates),
+                    ],
+                  );
+                }
+                return Container();
+              },
+            ),
+            _buildSalesInspectionSection(),
+            const SizedBox(height: 8),
+            _buildDropdown<String>(
+                'fiscalYear', _fiscalYears, 'Select Fiscal Year'),
+            const SizedBox(height: 8),
+            _buildDropdown<String>('period', _periods, 'Select Period'),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: () {
+                loggy.debug('Submit button pressed');
+              },
+              style: Theme.of(context).filledButtonTheme.style,
+              child: CustomText.labelSmall('Submit'),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -232,7 +238,6 @@ class _SelectionScreenState extends State<SelectionScreen> with UiLoggy {
                   .toList(),
               onChanged: (value) {
                 _updateTeamMemberSelection(level, value);
-                _unfocusAll();
               },
               borderRadius: _borderRadius,
             ),
@@ -274,7 +279,6 @@ class _SelectionScreenState extends State<SelectionScreen> with UiLoggy {
               .toList(),
           onChanged: (value) {
             _updateSelection(key, value);
-            _unfocusAll();
           },
           borderRadius: _borderRadius,
           focusNode: _focusNodes[key],
