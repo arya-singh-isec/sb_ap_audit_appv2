@@ -27,9 +27,7 @@ import 'navigation/app_router.dart';
 import 'network/network_info.dart';
 import 'utils/utils.dart';
 
-void main() {
-  runApp(MyApp());
-}
+late final LoginBloc loginBloc;
 
 class MyApp extends StatefulWidget {
   late final DioClient client;
@@ -67,7 +65,6 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver, UiLoggy {
   final ValueNotifier<String> appBarTitleNotifier = ValueNotifier('root');
 
   // Bloc instances
-  late final LoginBloc _loginBloc;
   late final GetPartnersBloc _getPartnersBloc;
   late final GetTeamMembersBloc _getTeamMembersBloc;
 
@@ -75,7 +72,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver, UiLoggy {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addObserver(this);
-    _loginBloc = LoginBloc(
+    loginBloc = LoginBloc(
       loginUser: LoginUser(widget.userRepository),
       logoutUser: LogoutUser(widget.userRepository),
       inputValidator: InputValidator(),
@@ -106,7 +103,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver, UiLoggy {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider.value(value: _loginBloc),
+        BlocProvider.value(value: loginBloc),
         BlocProvider.value(value: _getPartnersBloc),
         BlocProvider.value(value: _getTeamMembersBloc),
       ],

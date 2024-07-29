@@ -1,5 +1,9 @@
+import 'package:dio/dio.dart';
+
+import '../../../../core/config/constants.dart';
 import '../../../../core/error/exceptions.dart';
 import '../../../../core/network/dio_client.dart';
+import '../../../../core/utils/common_utils.dart';
 import '../models/partner_model.dart';
 
 abstract class PartnersRemoteDataSource {
@@ -14,22 +18,29 @@ class PartnersRemoteDataSourceImpl extends PartnersRemoteDataSource {
 
   @override
   Future<List<PartnerModel>?>? getPartners() async {
-    const String url = 'https://test.example.com/getPartners';
+    const String url = ApiConstants.getData;
     try {
-      final response = await client.get(url);
-      if (response.statusCode == 200) {
-        final List<dynamic> jsonData = response.data['data'];
+      final requestBody = auditGetData('MOBILE_SELF_FETCH_SUB_BROKER');
+
+      final response = await client.post(url, data: requestBody);
+      final responseBody = response.data;
+      if (responseBody['Status'] == 200) {
+        final List<dynamic> jsonData = responseBody['Success'];
         final List<PartnerModel> models =
             jsonData.map((jsonMap) => PartnerModel.fromJson(jsonMap)).toList();
         return models;
       } else {
-        final body = response.data;
         throw ServerException(
-            code: body['error']['code'], message: body['error']['message']);
+            code: responseBody['Status'], message: responseBody['Error']);
       }
-    } on Exception {
-      throw ServerException(
-          code: 500, message: 'Server error. Please try again later!');
+    } on DioException catch (e) {
+      if (e.response != null) {
+        throw ServerException(
+            code: e.response!.statusCode!, message: e.message!);
+      } else {
+        throw ServerException(
+            code: 500, message: 'Server error. Please try again later!');
+      }
     }
   }
 }

@@ -6,6 +6,7 @@ class AppConstants {
 class ApiConstants {
   static const String baseUrl = 'https://uatapi.icicidirect.com/ifa';
   static const String login = '$baseUrl/auditlogin';
+  static const String getData = '$baseUrl/auditgetdata';
 }
 
 class AppRoutes {

@@ -1,11 +1,13 @@
 import 'dart:convert';
+
 import 'package:dio/dio.dart';
+
 import '../../../../core/config/constants.dart';
 import '../../../../core/error/exceptions.dart';
+import '../../../../core/network/dio_client.dart';
 import '../../../../core/utils/common_utils.dart';
 import '../../domain/entities/credentials.dart';
 import '../models/user_model.dart';
-import '../../../../core/network/dio_client.dart';
 
 abstract class UserRemoteDataSource {
   /// Throws a [ServerException] for all error codes.
@@ -50,7 +52,7 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
     } on DioException catch (e) {
       if (e.response != null) {
         throw ServerException(
-            code: e.response!.statusCode!, message: e.response!.data['Error']);
+            code: e.response!.statusCode!, message: e.message!);
       } else {
         throw ServerException(
             code: 500, message: 'Server error. Please try again later!');

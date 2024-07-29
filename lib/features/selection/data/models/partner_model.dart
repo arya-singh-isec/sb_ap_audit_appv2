@@ -4,10 +4,10 @@ class PartnerModel extends Partner {
   const PartnerModel({required super.id, required super.name});
 
   factory PartnerModel.fromJson(Map<String, dynamic> json) {
-    return PartnerModel(id: json['data']['id'], name: json['data']['name']);
+    return PartnerModel(id: json['SubBrokerCode'], name: json['SubBrokerName']);
   }
 
   Map<String, dynamic> toJson() {
-    return {id: id, name: name};
+    return {"SubBrokerCode": id, "SubBrokerName": name};
   }
 }
