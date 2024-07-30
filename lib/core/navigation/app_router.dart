@@ -5,8 +5,8 @@ import 'package:sb_ap_audit_appv2/core/widgets/app_drawer.dart';
 import '../../features/login/presentation/pages/login_screen.dart';
 import '../../features/questionTable/presentation/pages/rejected_record_page.dart';
 import '../../features/selection/presentation/pages/selection_screen.dart';
-import '../../features/summary/domain/entities/record.dart';
-import '../../features/summary/presentation/pages/record_list.dart';
+import '../../features/summary/domain/entities/summary.dart';
+import '../../features/summary/presentation/pages/summary_list.dart';
 import '../config/constants.dart';
 import '../widgets/base_screen.dart';
 
@@ -36,8 +36,8 @@ final GoRouter appRouter = GoRouter(
           _titleNotifier.value = 'Partner Selection';
         } else if (state.fullPath == '/selection/summary') {
           _titleNotifier.value = 'Summary';
-        } else if (state.fullPath == '/selection/summary/rejectedRecord') {
-          _titleNotifier.value = '${(state.extra as Record).name} Details';
+        } else if (state.fullPath == '/selection/summary/rejectedSummary') {
+          _titleNotifier.value = '${(state.extra as Summary).subBrokerName} Details';
         }
         return NoTransitionPage(
           child: AppDrawerProvider(
@@ -58,13 +58,13 @@ final GoRouter appRouter = GoRouter(
               GoRoute(
                 name: AppRoutes.summary,
                 path: 'summary',
-                builder: (context, state) => const RecordListPage(),
+                builder: (context, state) => const SummaryListPage(),
                 routes: <RouteBase>[
                   GoRoute(
-                    name: AppRoutes.rejectedRecord,
-                    path: 'rejectedRecord',
-                    builder: (context, state) => RejectedRecordPage(
-                      record: state.extra as Record,
+                    name: AppRoutes.rejectedSummary,
+                    path: 'rejectedSummary',
+                    builder: (context, state) => RejectedSummaryPage(
+                      record: state.extra as Summary,
                     ),
                   ),
                 ],
