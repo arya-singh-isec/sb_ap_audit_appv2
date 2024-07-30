@@ -3,16 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sb_ap_audit_appv2/features/questionTable/presentation/blocs/question_bloc.dart';
 
-import '../../../summary/domain/entities/record.dart';
+import '../../../summary/domain/entities/summary.dart';
 import '../../data/repository/question_repository_impl.dart';
 import '../../domain/entities/question.dart';
 import '../../domain/usecases/get_questions.dart';
 import '../widget/question_card.dart';
 
-class RejectedRecordPage extends StatelessWidget {
-  final Record record;
+class RejectedSummaryPage extends StatelessWidget {
+  final Summary record;
 
-  const RejectedRecordPage({super.key, required this.record});
+  const RejectedSummaryPage({super.key, required this.record});
 
   void _showQuestionDetail(BuildContext context, Question question) {
     showModalBottomSheet(

@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-
 import '../../domain/entities/partner.dart';
 
 abstract class GetPartnersState extends Equatable {

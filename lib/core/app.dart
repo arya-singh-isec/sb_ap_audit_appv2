@@ -22,6 +22,11 @@ import '../features/selection/domain/usecases/get_subordinates.dart';
 import '../features/selection/domain/usecases/get_team_members.dart';
 import '../features/selection/presentation/blocs/get_partners_bloc.dart';
 import '../features/selection/presentation/blocs/get_team_members_bloc.dart';
+import '../features/summary/data/repository/summary_repository_impl.dart';
+import '../features/summary/data/datasources/summary_remote_data_source.dart';
+import '../features/summary/domain/repositories/summary_repository.dart';
+import '../features/summary/domain/usecases/get_summary_data.dart';
+import '../features/summary/presentation/blocs/summary_bloc.dart';
 import 'config/theme.dart';
 import 'navigation/app_router.dart';
 import 'network/network_info.dart';
@@ -36,6 +41,8 @@ class MyApp extends StatefulWidget {
   late final PartnersRemoteDataSource partnersRemoteDataSource;
   late final PartnersRepository partnersRepository;
   late final TeamMembersRemoteDataSource teamMembersRemoteDataSource;
+  late final SummaryRemoteDataSource summaryRemoteDataSource;
+  late final SummaryRepository summaryRepository;
   late final TeamMembersRepository teamMembersRepository;
   late final NetworkInfo networkInfo;
   late final InternetConnectionChecker connectionChecker;
@@ -55,6 +62,9 @@ class MyApp extends StatefulWidget {
     teamMembersRepository = TeamMembersRepositoryImpl(
         remoteDataSource: teamMembersRemoteDataSource,
         networkInfo: networkInfo);
+    summaryRemoteDataSource = SummaryRemoteDataSourceImpl(client: client);
+    summaryRepository = SummaryRepositoryImpl(
+        remoteDataSource: summaryRemoteDataSource, networkInfo: networkInfo);
   }
 
   @override
@@ -64,9 +74,10 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> with WidgetsBindingObserver, UiLoggy {
   final ValueNotifier<String> appBarTitleNotifier = ValueNotifier('root');
 
-  // Bloc instances
+  // Bloc/Cubit instances
   late final GetPartnersBloc _getPartnersBloc;
   late final GetTeamMembersBloc _getTeamMembersBloc;
+  late final SummaryCubit _summaryCubit;
 
   @override
   void initState() {
@@ -84,6 +95,9 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver, UiLoggy {
       getTeamMembers: GetTeamMembers(repository: widget.teamMembersRepository),
       getSubordinates:
           GetSubordinates(repository: widget.teamMembersRepository),
+    );
+    _summaryCubit = SummaryCubit(
+      getSummarys: GetSummarys(repository: widget.summaryRepository),
     );
   }
 
@@ -106,6 +120,7 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver, UiLoggy {
         BlocProvider.value(value: loginBloc),
         BlocProvider.value(value: _getPartnersBloc),
         BlocProvider.value(value: _getTeamMembersBloc),
+        BlocProvider.value(value: _summaryCubit),
       ],
       child: MaterialApp.router(
         title: 'ICICIDirect',
