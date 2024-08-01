@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:sb_ap_audit_appv2/core/widgets/custom_toast.dart';
 
 import '../../features/login/domain/entities/user.dart';
 import '../../features/login/presentation/blocs/bloc.dart';
@@ -11,13 +12,8 @@ import '../app.dart';
 import '../config/constants.dart';
 
 // UI
-void showSnackbar(BuildContext context, String message) {
-  ScaffoldMessenger.of(context).showSnackBar(
-    SnackBar(
-      content: Text(message),
-      backgroundColor: Colors.red,
-    ),
-  );
+void showToastMessage(BuildContext context, String message) {
+  CustomToast.show(context, message);
 }
 
 // LOGIC

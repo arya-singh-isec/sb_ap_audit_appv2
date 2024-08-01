@@ -109,7 +109,7 @@ class AppDrawerState extends State<AppDrawer>
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 30.0),
       decoration: const BoxDecoration(
-        color: Color(0xFFB22222),
+        color: Color.fromARGB(255, 87, 80, 77),
       ),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,

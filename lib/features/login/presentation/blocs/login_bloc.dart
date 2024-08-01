@@ -2,7 +2,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/error/failures.dart';
 import '../../../../core/logger/logger.dart';
-import '../../../../core/utils/input_validator.dart';
+import '../../../../core/utils/utils.dart';
+import '../../domain/entities/credentials.dart';
 import '../../domain/entities/user.dart';
 import '../../domain/usecases/login_user.dart';
 import '../../domain/usecases/logout_user.dart';
@@ -34,7 +35,11 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> with BlocLoggy {
         emit(LoginEmpty());
       }, (credentials) async {
         emit(LoginLoading());
-        result = await loginUser.execute(credentials);
+        final encryptedPassword =
+            CustomEncrypter.instance.encrypt(credentials.password);
+        final encryptedCredentials = Credentials(
+            username: credentials.username, password: encryptedPassword);
+        result = await loginUser.execute(encryptedCredentials);
         result?.fold(
           (failure) {
             emit(LoginError(message: _mapFailureToMessage(failure)));
@@ -64,8 +69,10 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> with BlocLoggy {
       return failure.message;
     } else if (failure is LocalFailure) {
       return 'Local Error';
+    } else if (failure is NetworkFailure) {
+      return 'Internet connection not available';
     } else {
-      return 'Unexpected Error';
+      return 'Unexpected error';
     }
   }
 }
