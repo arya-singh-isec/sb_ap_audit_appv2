@@ -2,21 +2,21 @@ import 'package:dartz/dartz.dart';
 
 import '../../../../core/error/exceptions.dart';
 import '../../../../core/error/failures.dart';
-import '../../../../core/network/network_info.dart';
+import '../../../../core/network/network_service.dart';
 import '../../domain/entities/team_member.dart';
 import '../../domain/repositories/team_members_repository.dart';
 import '../datasources/team_members_remote_data_source.dart';
 
 class TeamMembersRepositoryImpl implements TeamMembersRepository {
   final TeamMembersRemoteDataSource remoteDataSource;
-  final NetworkInfo networkInfo;
+  final NetworkService networkService;
 
   TeamMembersRepositoryImpl(
-      {required this.remoteDataSource, required this.networkInfo});
+      {required this.remoteDataSource, required this.networkService});
 
   @override
   Future<Either<Failure, List<TeamMember>?>?>? getTeamMembers() async {
-    await networkInfo.isConnected;
+    await networkService.isConnected;
     try {
       final response = await remoteDataSource.getTeamMembers();
       return Right(response);
@@ -28,7 +28,7 @@ class TeamMembersRepositoryImpl implements TeamMembersRepository {
   @override
   Future<Either<Failure, List<TeamMember>?>?>? getSubordinates(
       String? supervisorId) async {
-    await networkInfo.isConnected;
+    await networkService.isConnected;
     try {
       final response = await remoteDataSource.getSubordinates(supervisorId);
       return Right(response);

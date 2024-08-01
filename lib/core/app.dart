@@ -1,7 +1,8 @@
+import 'dart:async';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:internet_connection_checker/internet_connection_checker.dart';
 import 'package:loggy/loggy.dart';
 
 import '../core/network/dio_client.dart';
@@ -22,14 +23,14 @@ import '../features/selection/domain/usecases/get_subordinates.dart';
 import '../features/selection/domain/usecases/get_team_members.dart';
 import '../features/selection/presentation/blocs/get_partners_bloc.dart';
 import '../features/selection/presentation/blocs/get_team_members_bloc.dart';
-import '../features/summary/data/repository/summary_repository_impl.dart';
 import '../features/summary/data/datasources/summary_remote_data_source.dart';
+import '../features/summary/data/repository/summary_repository_impl.dart';
 import '../features/summary/domain/repositories/summary_repository.dart';
 import '../features/summary/domain/usecases/get_summary_data.dart';
 import '../features/summary/presentation/blocs/summary_bloc.dart';
 import 'config/theme.dart';
 import 'navigation/app_router.dart';
-import 'network/network_info.dart';
+import 'network/network_service.dart';
 import 'utils/utils.dart';
 
 late final LoginBloc loginBloc;
@@ -44,27 +45,27 @@ class MyApp extends StatefulWidget {
   late final SummaryRemoteDataSource summaryRemoteDataSource;
   late final SummaryRepository summaryRepository;
   late final TeamMembersRepository teamMembersRepository;
-  late final NetworkInfo networkInfo;
-  late final InternetConnectionChecker connectionChecker;
+  late final NetworkService networkService;
 
   MyApp({super.key}) {
     client = DioClient(Dio());
-    connectionChecker = InternetConnectionChecker();
-    networkInfo = NetworkInfoImpl(connectionChecker);
+    networkService = NetworkService();
     userRemoteDataSource = UserRemoteDataSourceImpl(client: client);
     userRepository = UserRepositoryImpl(
-        remoteDataSource: userRemoteDataSource, networkInfo: networkInfo);
+        remoteDataSource: userRemoteDataSource, networkService: networkService);
     partnersRemoteDataSource = PartnersRemoteDataSourceImpl(client: client);
     partnersRepository = PartnersRepositoryImpl(
-        remoteDataSource: partnersRemoteDataSource, networkInfo: networkInfo);
+        remoteDataSource: partnersRemoteDataSource,
+        networkService: networkService);
     teamMembersRemoteDataSource =
         TeamMembersRemoteDataSourceImpl(client: client);
     teamMembersRepository = TeamMembersRepositoryImpl(
         remoteDataSource: teamMembersRemoteDataSource,
-        networkInfo: networkInfo);
+        networkService: networkService);
     summaryRemoteDataSource = SummaryRemoteDataSourceImpl(client: client);
     summaryRepository = SummaryRepositoryImpl(
-        remoteDataSource: summaryRemoteDataSource, networkInfo: networkInfo);
+        remoteDataSource: summaryRemoteDataSource,
+        networkService: networkService);
   }
 
   @override
@@ -73,6 +74,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> with WidgetsBindingObserver, UiLoggy {
   final ValueNotifier<String> appBarTitleNotifier = ValueNotifier('root');
+  late final StreamSubscription _connectivityListener;
 
   // Bloc/Cubit instances
   late final GetPartnersBloc _getPartnersBloc;
@@ -99,11 +101,23 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver, UiLoggy {
     _summaryCubit = SummaryCubit(
       getSummarys: GetSummarys(repository: widget.summaryRepository),
     );
+    // Listen to Network Service
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      _connectivityListener =
+          widget.networkService.connectivityStream.listen((isConnected) {
+        if (isConnected!) {
+          showToastMessage(context, 'Back Online');
+        } else {
+          showToastMessage(context, 'Lost Internet Connection');
+        }
+      });
+    });
   }
 
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
+    _connectivityListener.cancel();
     appBarTitleNotifier.dispose();
     super.dispose();
   }

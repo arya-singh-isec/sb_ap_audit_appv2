@@ -50,9 +50,8 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
             code: responseBody['Status'], message: responseBody['Error']);
       }
     } on DioException catch (e) {
-      if (e.response != null) {
-        throw ServerException(
-            code: e.response!.statusCode!, message: e.message!);
+      if (e.message != null) {
+        throw ServerException(code: 500, message: e.message!);
       } else {
         throw ServerException(
             code: 500, message: 'Server error. Please try again later!');

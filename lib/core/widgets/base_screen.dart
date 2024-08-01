@@ -32,9 +32,9 @@ class BaseScreen extends StatelessWidget {
             body: BlocListener<LoginBloc, LoginState>(
               listener: (context, state) {
                 if (state is LogoutError) {
-                  showSnackbar(context, state.message);
+                  showToastMessage(context, state.message);
                 } else if (state is LoginError) {
-                  showSnackbar(context, state.message);
+                  showToastMessage(context, state.message);
                 } else if (state is LogoutSuccess) {
                   context.goNamed(AppRoutes.login);
                 }
@@ -59,9 +59,9 @@ class BaseScreen extends StatelessWidget {
                 body: BlocListener<LoginBloc, LoginState>(
                   listener: (context, state) {
                     if (state is LogoutError) {
-                      showSnackbar(context, state.message);
+                      showToastMessage(context, state.message);
                     } else if (state is LoginError) {
-                      showSnackbar(context, state.message);
+                      showToastMessage(context, state.message);
                     } else if (state is LogoutSuccess) {
                       context.goNamed(AppRoutes.login);
                     }

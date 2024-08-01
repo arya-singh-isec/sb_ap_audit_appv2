@@ -17,4 +17,6 @@ class ServerFailure extends Failure {
       : super([code, message]);
 }
 
+class NetworkFailure extends Failure {}
+
 class LocalFailure extends Failure {}
