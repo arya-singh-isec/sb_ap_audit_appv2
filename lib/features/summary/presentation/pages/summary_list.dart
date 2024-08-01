@@ -5,15 +5,25 @@ import 'package:sb_ap_audit_appv2/core/config/constants.dart';
 import '../blocs/summary_bloc.dart';
 import '../widget/summary_card.dart';
 
-class SummaryListPage extends StatelessWidget {
+class SummaryListPage extends StatefulWidget {
   const SummaryListPage({super.key});
 
   @override
+  State<SummaryListPage> createState() => _SummaryListPageState();
+}
+
+class _SummaryListPageState extends State<SummaryListPage> {
+  @override
+  void initState() {
+   
+    BlocProvider.of<SummaryCubit>(context).fetchSummarys();
+    super.initState();
+  }
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: BlocProvider<SummaryCubit>(
-        create: (context) => BlocProvider.of<SummaryCubit>(context)..fetchSummarys(),
-        child: BlocBuilder<SummaryCubit, SummaryState>(
+      body: 
+      BlocBuilder<SummaryCubit, SummaryState>(
           builder: (context, state) {
             if (state is SummaryInitial) {
               return const Center(child: Text('Please wait while we fetch data...'));
@@ -21,8 +31,8 @@ class SummaryListPage extends StatelessWidget {
               return const Center(child: CircularProgressIndicator());
             } else if (state is SummaryLoaded) {
               final records = state.records.fold(
-                (failure) => null, // Handle failure, or return null for simplicity
-                (records) => records, // Extract the list if present
+                (failure) => null, 
+                (records) => records, 
               );
 
               if (records == null || records.isEmpty) {
@@ -55,8 +65,9 @@ class SummaryListPage extends StatelessWidget {
               return const Center(child: Text('Unexpected state'));
             }
           },
-        ),
-      ),
+      
+      
+    )
     );
   }
 }
