@@ -18,7 +18,6 @@ class SelectionScreen extends StatefulWidget {
 }
 
 class _SelectionScreenState extends State<SelectionScreen> with UiLoggy {
-  static const Color _amberColor = Colors.amber;
   static const EdgeInsets _padding = EdgeInsets.all(16);
   static const BorderRadius _borderRadius =
       BorderRadius.all(Radius.circular(8));
@@ -142,15 +141,17 @@ class _SelectionScreenState extends State<SelectionScreen> with UiLoggy {
             const SizedBox(height: 8),
             _buildDropdown<String>(
                 'fiscalYear', _fiscalYears, 'Select Fiscal Year'),
-            const SizedBox(height: 8),
             _buildDropdown<String>('period', _periods, 'Select Period'),
-            const SizedBox(height: 20),
+            const SizedBox(height: 12.0),
             ElevatedButton(
               onPressed: () {
                 loggy.debug('Submit button pressed');
               },
               style: Theme.of(context).filledButtonTheme.style,
-              child: CustomText.labelSmall('Submit'),
+              child: CustomText.labelSmall(
+                'Submit',
+                textColor: TextColor.white,
+              ),
             ),
           ],
         ),
@@ -162,7 +163,7 @@ class _SelectionScreenState extends State<SelectionScreen> with UiLoggy {
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: const BoxDecoration(
-        color: _amberColor,
+        color: Colors.amber,
         borderRadius: _borderRadius,
       ),
       child: Column(
@@ -215,32 +216,31 @@ class _SelectionScreenState extends State<SelectionScreen> with UiLoggy {
       child: RepaintBoundary(
         child: ButtonTheme(
           alignedDropdown: true,
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(0, 0, 0, 8),
-            child: DropdownButtonFormField<String>(
-              key: ValueKey('dropdown_$level'),
-              value: level < _teamMemberSelections.length
-                  ? _teamMemberSelections[level]
-                  : null,
-              hint: CustomText.bodyMedium(hint),
-              decoration: const InputDecoration(
-                border: OutlineInputBorder(),
-                contentPadding:
-                    EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                isDense: true,
-              ),
-              items: items!
-                  .map((item) => DropdownMenuItem(
-                        key: ValueKey(item.id),
-                        value: item.id,
-                        child: CustomText.bodyMedium(item.name),
-                      ))
-                  .toList(),
-              onChanged: (value) {
-                _updateTeamMemberSelection(level, value);
-              },
-              borderRadius: _borderRadius,
+          child: DropdownButtonFormField<String>(
+            isExpanded: true,
+            menuMaxHeight: 200.0,
+            key: ValueKey('dropdown_$level'),
+            value: level < _teamMemberSelections.length
+                ? _teamMemberSelections[level]
+                : null,
+            hint: CustomText.bodyMedium(hint),
+            decoration: const InputDecoration(
+              border: OutlineInputBorder(),
+              contentPadding: EdgeInsets.symmetric(vertical: 10),
+              isDense: true,
             ),
+            items: items!
+                .map((item) => DropdownMenuItem(
+                      key: ValueKey(item.id),
+                      value: item.id,
+                      child: CustomText.bodyMedium(item.name),
+                    ))
+                .toList(),
+            onChanged: (value) {
+              _updateTeamMemberSelection(level, value);
+            },
+            borderRadius: _borderRadius,
+            padding: const EdgeInsets.only(bottom: 8.0),
           ),
         ),
       ),
@@ -263,11 +263,12 @@ class _SelectionScreenState extends State<SelectionScreen> with UiLoggy {
         alignedDropdown: true,
         child: DropdownButtonFormField<dynamic>(
           isExpanded: true,
+          menuMaxHeight: 200.0,
           value: _otherSelections[key],
           hint: CustomText.bodyMedium(hint),
           decoration: const InputDecoration(
             border: OutlineInputBorder(),
-            contentPadding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            contentPadding: EdgeInsets.symmetric(vertical: 10),
             isDense: true,
           ),
           items: items
@@ -283,6 +284,7 @@ class _SelectionScreenState extends State<SelectionScreen> with UiLoggy {
           },
           borderRadius: _borderRadius,
           focusNode: _focusNodes[key],
+          padding: const EdgeInsets.only(bottom: 8.0),
         ),
       ),
     );
@@ -329,7 +331,7 @@ class _SelectionScreenState extends State<SelectionScreen> with UiLoggy {
           child: Container(
             padding: const EdgeInsets.all(12),
             decoration: const BoxDecoration(
-              color: _amberColor,
+              color: Colors.amber,
               borderRadius: _borderRadius,
             ),
             child: CustomText.titleSmall(

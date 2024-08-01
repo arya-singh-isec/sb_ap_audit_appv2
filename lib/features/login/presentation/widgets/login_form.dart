@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:loggy/loggy.dart';
 
-import '../../../../core/utils/utils.dart';
 import '../../../../core/widgets/custom_text.dart';
 import '../../domain/entities/credentials.dart';
 import '../blocs/bloc.dart';
@@ -93,11 +92,9 @@ class _LoginFormState extends State<LoginForm> with UiLoggy {
                 builder: (context, state) => ElevatedButton(
                   onPressed: () {
                     loggy.debug('Sign in button pressed');
-                    final encryptedPassword = CustomEncrypter.instance
-                        .encrypt(_passwordController.text);
                     final credentials = Credentials(
                         username: _usernameController.text,
-                        password: encryptedPassword);
+                        password: _passwordController.text);
                     BlocProvider.of<LoginBloc>(context).add(
                       Submitted(credentials: credentials),
                     );
