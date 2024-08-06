@@ -1,4 +1,4 @@
-import 'package:equatable/equatable.dart';
+part of 'bloc.dart';
 
 abstract class GetTeamMembersEvent extends Equatable {
   const GetTeamMembersEvent([List props = const <dynamic>[]]);

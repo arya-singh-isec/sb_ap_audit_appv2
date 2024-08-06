@@ -1,5 +1,4 @@
-import 'package:equatable/equatable.dart';
-import '../../domain/entities/partner.dart';
+part of 'bloc.dart';
 
 abstract class GetPartnersState extends Equatable {
   const GetPartnersState([List props = const <dynamic>[]]);

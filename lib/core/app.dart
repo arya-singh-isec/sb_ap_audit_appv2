@@ -13,16 +13,22 @@ import '../features/login/domain/usecases/login_user.dart';
 import '../features/login/domain/usecases/logout_user.dart';
 import '../features/login/presentation/blocs/bloc.dart';
 import '../features/selection/data/datasources/partners_remote_data_source.dart';
+import '../features/selection/data/datasources/selection_remote_data_source.dart';
 import '../features/selection/data/datasources/team_members_remote_data_source.dart';
 import '../features/selection/data/repositories/partners_repository_impl.dart';
+import '../features/selection/data/repositories/selection_repository_impl.dart';
 import '../features/selection/data/repositories/team_members_repository_impl.dart';
 import '../features/selection/domain/repositories/partners_repository.dart';
+import '../features/selection/domain/repositories/selection_repository.dart';
 import '../features/selection/domain/repositories/team_members_repository.dart';
+import '../features/selection/domain/usecases/get_fiscal_year_data.dart';
 import '../features/selection/domain/usecases/get_partners.dart';
 import '../features/selection/domain/usecases/get_subordinates.dart';
 import '../features/selection/domain/usecases/get_team_members.dart';
-import '../features/selection/presentation/blocs/get_partners_bloc.dart';
-import '../features/selection/presentation/blocs/get_team_members_bloc.dart';
+import '../features/selection/presentation/blocs/get_fiscal_year/bloc.dart';
+import '../features/selection/presentation/blocs/get_partners/bloc.dart';
+import '../features/selection/presentation/blocs/get_team_members/bloc.dart';
+import '../features/selection/presentation/blocs/submit_selection/bloc.dart';
 import '../features/summary/data/datasources/summary_remote_data_source.dart';
 import '../features/summary/data/repository/summary_repository_impl.dart';
 import '../features/summary/domain/repositories/summary_repository.dart';
@@ -42,9 +48,11 @@ class MyApp extends StatefulWidget {
   late final PartnersRemoteDataSource partnersRemoteDataSource;
   late final PartnersRepository partnersRepository;
   late final TeamMembersRemoteDataSource teamMembersRemoteDataSource;
+  late final SelectionRemoteDataSource selectionRemoteDataSource;
   late final SummaryRemoteDataSource summaryRemoteDataSource;
   late final SummaryRepository summaryRepository;
   late final TeamMembersRepository teamMembersRepository;
+  late final SelectionRepository selectionRepostiory;
   late final NetworkService networkService;
 
   MyApp({super.key}) {
@@ -61,6 +69,10 @@ class MyApp extends StatefulWidget {
         TeamMembersRemoteDataSourceImpl(client: client);
     teamMembersRepository = TeamMembersRepositoryImpl(
         remoteDataSource: teamMembersRemoteDataSource,
+        networkService: networkService);
+    selectionRemoteDataSource = SelectionRemoteDataSourceImpl(client: client);
+    selectionRepostiory = SelectionRepositoryImpl(
+        remoteDataSource: selectionRemoteDataSource,
         networkService: networkService);
     summaryRemoteDataSource = SummaryRemoteDataSourceImpl(client: client);
     summaryRepository = SummaryRepositoryImpl(
@@ -79,6 +91,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver, UiLoggy {
   // Bloc/Cubit instances
   late final GetPartnersBloc _getPartnersBloc;
   late final GetTeamMembersBloc _getTeamMembersBloc;
+  late final GetFiscalYearBloc _getFiscalYearBloc;
+  late final SelectionBloc _selectionBloc;
   late final SummaryCubit _summaryCubit;
 
   @override
@@ -98,6 +112,11 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver, UiLoggy {
       getSubordinates:
           GetSubordinates(repository: widget.teamMembersRepository),
     );
+    _getFiscalYearBloc = GetFiscalYearBloc(
+      getFiscalYearData:
+          GetFiscalYearData(repository: widget.selectionRepostiory),
+    );
+    _selectionBloc = SelectionBloc();
     _summaryCubit = SummaryCubit(
       getSummarys: GetSummarys(repository: widget.summaryRepository),
     );
@@ -134,6 +153,8 @@ class _MyAppState extends State<MyApp> with WidgetsBindingObserver, UiLoggy {
         BlocProvider.value(value: loginBloc),
         BlocProvider.value(value: _getPartnersBloc),
         BlocProvider.value(value: _getTeamMembersBloc),
+        BlocProvider.value(value: _getFiscalYearBloc),
+        BlocProvider.value(value: _selectionBloc),
         BlocProvider.value(value: _summaryCubit),
       ],
       child: MaterialApp.router(
