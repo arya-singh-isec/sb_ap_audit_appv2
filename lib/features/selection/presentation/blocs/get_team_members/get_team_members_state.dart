@@ -1,6 +1,4 @@
-import 'package:equatable/equatable.dart';
-
-import '../../domain/entities/team_member.dart';
+part of 'bloc.dart';
 
 abstract class GetTeamMembersState extends Equatable {
   final List<Object?> _props;

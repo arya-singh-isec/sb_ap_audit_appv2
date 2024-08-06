@@ -5,6 +5,7 @@ import 'package:flutter/services.dart';
 import 'package:sb_ap_audit_appv2/core/logger/logger.dart';
 
 import 'core/app.dart';
+import 'core/logger/logger.dart';
 import 'core/logger/logger_config.dart';
 
 Future<void> main() async {

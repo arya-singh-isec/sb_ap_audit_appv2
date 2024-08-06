@@ -1,10 +1,13 @@
+import 'package:equatable/equatable.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../core/error/failures.dart';
-import '../../../../core/logger/logger.dart';
-import '../../domain/usecases/get_partners.dart';
-import 'get_partners_event.dart';
-import 'get_partners_state.dart';
+import '../../../../../core/error/failures.dart';
+import '../../../../../core/logger/logger.dart';
+import '../../../domain/entities/partner.dart';
+import '../../../domain/usecases/get_partners.dart';
+
+part 'get_partners_event.dart';
+part 'get_partners_state.dart';
 
 class GetPartnersBloc extends Bloc<GetPartnersEvent, GetPartnersState>
     with BlocLoggy {
