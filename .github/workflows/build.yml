@@ -1,0 +1,78 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - dev
+  pull_request:
+    branches:
+      - dev
+
+jobs:
+  sonarqube:
+    name: Sonarqube scan
+    runs-on: ubuntu-latest
+    env:
+      SONAR_SCANNER_PATH: sonar-scanner-6.1.0.4477-linux-x64
+      SONAR_SCANNER_VER: sonar-scanner-cli-6.1.0.4477-linux-x64
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Fetch complete history of commits
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.19.4'
+          channel: 'stable'
+          cache: true
+          cache-key: flutter-${{runner.os}}-${{ hashFiles('**/pubspec.lock') }}
+
+      # - name: Cache Sonarqube Scanner and JDK
+      #   id: sonar-cache
+      #   uses: actions/cache@v4
+      #   with:
+      #     path: | 
+      #       /opt/hostedtoolcache
+      #       /opt/.sonar/cache
+      #       /home/runner/.sonar
+      #     key: sonar-cache-${{runner.os}}-${{ env.SONAR_SCANNER_VER }}-${{ hashFiles('**/sonar-project.properties') }}
+
+      # - name: Set up JDK
+      #   uses: actions/setup-java@v4
+      #   with:
+      #     distribution: 'adopt'
+      #     java-version: '17'
+      #     java-package: 'jre'
+      #     check-latest: true
+
+      # - name: Download SonarQube Scanner if not cached
+      #   # if: steps.sonar-cache.outputs.cache-hit != 'true'
+      #   run: |
+      #     wget https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/$SONAR_SCANNER_VER.zip
+      #     unzip $SONAR_SCANNER_VER.zip
+
+      - name: Run Tests and Generate Coverage
+        run: |
+          flutter test --coverage
+          genhtml coverage/lcov.info -o coverage/html
+        continue-on-error: true
+
+      # - name: Sonarqube Scan
+      #   env:
+      #     SONAR_HOST_URL: ${{secrets.SONAR_HOST_URL}}
+      #     SONAR_TOKEN: ${{secrets.SONAR_TOKEN}}
+      #   run: |
+      #     $SONAR_SCANNER_PATH/bin/sonar-
+            
+      - uses: sonarsource/sonarqube-scan-action@master
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
+      - name: Run Sonarqube Quality Gate Check
+        uses: sonarsource/sonarqube-quality-gate-action@master
+        timeout-minutes: 5
+        env:
+          SONAR_TOKEN: ${{secrets.SONAR_TOKEN}}
