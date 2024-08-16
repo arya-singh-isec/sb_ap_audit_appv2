@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
 import 'core/app.dart';
 import 'core/logger/logger_config.dart';
 
@@ -20,9 +19,15 @@ void main() {
     overlays: [SystemUiOverlay.top],
   );
   SystemChrome.setPreferredOrientations(
-      [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]).then((_) {
+    [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown],
+  ).then((_) {
     runApp(
-      MaterialApp(home: MyApp()),
+      MaterialApp(
+        home: MyApp(),
+        theme: ThemeData(
+          fontFamily: 'Roboto', // Ensure this matches the family name in pubspec.yaml
+        ),
+      ),
     );
   });
 }
